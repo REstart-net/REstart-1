@@ -118,60 +118,98 @@ export async function generateTest(subject: Subject, params: {
   questionCount?: number;
   tags?: string[];
 } = {}) {
-  // First get the category ID for the subject
-  const { data: categories, error: categoryError } = await supabase
-    .from('question_categories')
-    .select('id')
-    .eq('name', subject);
+  try {
+    console.log(`Fetching category ID for subject: ${subject}`);
+    // First get the category ID for the subject
+    const { data: categories, error: categoryError } = await supabase
+      .from('question_categories')
+      .select('id')
+      .eq('name', subject);
 
-  if (categoryError) throw categoryError;
-  if (!categories || categories.length === 0) {
-    throw new Error(`No category found for subject: ${subject}`);
-  }
-
-  const categoryId = categories[0].id;
-
-  const questions = await getQuestions({
-    categoryId,
-    difficulty: params.difficulty,
-    tags: params.tags,
-    isActive: true,
-  });
-
-  // Randomly select questions
-  const selectedQuestions = questions
-    .sort(() => Math.random() - 0.5)
-    .slice(0, params.questionCount || 30);
-
-  // Update usage statistics
-  if (selectedQuestions.length > 0) {
-    try {
-      const updates = selectedQuestions.map(async (q) => {
-        const { data: existing } = await supabase
-          .from('question_usage_stats')
-          .select('times_used')
-          .eq('question_id', q.id)
-          .single();
-
-        return supabase
-          .from('question_usage_stats')
-          .upsert({
-            question_id: q.id,
-            times_used: (existing?.times_used || 0) + 1,
-            last_used: new Date().toISOString(),
-          });
-      });
-
-      await Promise.all(updates).catch(err => {
-        console.error('Failed to update question usage stats:', err);
-      });
-    } catch (error) {
-      console.error('Failed to update question usage stats:', error);
-      // Continue even if stats update fails
+    if (categoryError) {
+      console.error(`Error fetching category for ${subject}:`, categoryError);
+      throw categoryError;
     }
-  }
+    
+    if (!categories || categories.length === 0) {
+      console.error(`No category found for subject: ${subject}`);
+      throw new Error(`No category found for subject: ${subject}`);
+    }
 
-  return selectedQuestions;
+    const categoryId = categories[0].id;
+    console.log(`Found category ID for ${subject}: ${categoryId}`);
+
+    const { data: questions, error: questionsError } = await supabase
+      .from('questions')
+      .select(`
+        *,
+        question_categories (
+          name,
+          description
+        ),
+        question_tags_map (
+          question_tags (
+            id,
+            name
+          )
+        )
+      `)
+      .eq('category_id', categoryId)
+      .eq('is_active', true);
+      
+    if (questionsError) {
+      console.error(`Error fetching questions for ${subject}:`, questionsError);
+      throw questionsError;
+    }
+    
+    console.log(`Retrieved ${questions?.length || 0} questions for ${subject}`);
+    
+    if (!questions || questions.length === 0) {
+      console.warn(`No questions found for ${subject}`);
+      return [];
+    }
+
+    // Randomly select questions
+    const selectedQuestions = questions
+      .sort(() => Math.random() - 0.5)
+      .slice(0, params.questionCount || 30);
+
+    console.log(`Selected ${selectedQuestions.length} questions for ${subject} test`);
+
+    // Update usage statistics
+    if (selectedQuestions.length > 0) {
+      try {
+        const updates = selectedQuestions.map(async (q) => {
+          const { data: existing } = await supabase
+            .from('question_usage_stats')
+            .select('times_used')
+            .eq('question_id', q.id)
+            .single();
+
+          return supabase
+            .from('question_usage_stats')
+            .upsert({
+              question_id: q.id,
+              times_used: (existing?.times_used || 0) + 1,
+              last_used: new Date().toISOString(),
+            });
+        });
+
+        await Promise.all(updates).catch(err => {
+          console.error('Failed to update question usage stats:', err);
+        });
+      } catch (error) {
+        console.error('Failed to update question usage stats:', error);
+        // Continue even if stats update fails
+      }
+    }
+
+    return selectedQuestions;
+  } catch (error) {
+    console.error(`Error in generateTest for ${subject}:`, error);
+    // Return empty array to allow fallback test generation
+    return [];
+  }
 }
 
 export async function updateQuestionStats(

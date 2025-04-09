@@ -26,23 +26,28 @@ export default function TestPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set());
   const [showResults, setShowResults] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
 
   // Validate subject and redirect if invalid
   useEffect(() => {
     if (!subjects.includes(subject)) {
-      setLocation("/dashboard");
+      console.error(`Invalid subject: "${subject}"`);
+      setError(`Invalid subject: "${subject}". Please navigate to a valid subject page.`);
+      setLoading(false);
     }
   }, [subject, setLocation]);
 
   useEffect(() => {
     async function loadTest() {
       try {
+        console.log(`Loading test for subject: ${subject}`);
+        setLoading(true);
         const generatedTest = await generateTest(subject);
+        console.log(`Test loaded successfully for ${subject} with ${generatedTest.questions.length} questions`);
         setTest(generatedTest);
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load test');
+        console.error(`Error loading test for ${subject}:`, err);
+        setError(err instanceof Error ? err.message : `Failed to load test for ${subject}`);
         setLoading(false);
       }
     }
@@ -51,9 +56,12 @@ export default function TestPage() {
     }
   }, [subject]);
 
+  // Monitor fullscreen status
   useEffect(() => {
     const handleFullScreenChange = () => {
-      setIsFullScreen(!!document.fullscreenElement);
+      // We track this but don't use it directly - it's for potential future features
+      const isInFullscreen = !!document.fullscreenElement;
+      console.log("Fullscreen status changed:", isInFullscreen);
     };
 
     document.addEventListener("fullscreenchange", handleFullScreenChange);
@@ -62,7 +70,12 @@ export default function TestPage() {
 
   const startTest = async () => {
     try {
-      await document.documentElement.requestFullscreen();
+      if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen().catch(err => {
+          console.warn('Failed to enter fullscreen:', err);
+          // Continue test even if fullscreen fails
+        });
+      }
       setTestStarted(true);
     } catch (err) {
       console.error("Could not enter fullscreen mode:", err);
@@ -104,7 +117,9 @@ export default function TestPage() {
     }
 
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      await document.exitFullscreen().catch(err => {
+        console.warn('Failed to exit fullscreen:', err);
+      });
     }
   };
 
@@ -116,6 +131,7 @@ export default function TestPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <p className="ml-3 text-muted-foreground">Loading test for {subject}...</p>
       </div>
     );
   }
@@ -135,15 +151,26 @@ export default function TestPage() {
   }
 
   if (!test) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="p-6 max-w-md">
+          <h2 className="text-xl font-semibold text-amber-500 mb-4">Test Not Available</h2>
+          <p className="text-muted-foreground mb-6">The test for {subject} could not be loaded. Please try again later.</p>
+          <Button onClick={() => setLocation(`/subjects/${encodedSubject}`)}>
+            Return to Subject Page
+          </Button>
+        </Card>
+      </div>
+    );
   }
 
   if (!testStarted) {
     return (
       <TestInstructions
-        duration={test.duration}
-        totalQuestions={test.questions.length}
+        duration={test?.duration || 60}
+        totalQuestions={test?.questions.length || 0}
         onStart={startTest}
+        subject={subject}
       />
     );
   }
@@ -185,6 +212,14 @@ export default function TestPage() {
       </motion.div>
     );
   }
+
+  // Get array of question indices that have been answered
+  const answeredIndices = Object.keys(answers).map(id => 
+    test.questions.findIndex(q => q.id === id)
+  ).filter(index => index !== -1);
+
+  // Convert Set to Array for marked questions
+  const markedIndices = Array.from(markedQuestions);
 
   return (
     <div className="min-h-screen bg-background">
@@ -252,14 +287,46 @@ export default function TestPage() {
             </div>
           </div>
 
-          <div className="md:col-span-1">
-            <QuestionNavigator
-              totalQuestions={test.questions.length}
-              currentQuestion={currentQuestion}
-              answeredQuestions={answers}
-              markedQuestions={markedQuestions}
-              onQuestionSelect={setCurrentQuestion}
-            />
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold mb-3">Navigation</h3>
+              <QuestionNavigator
+                totalQuestions={test.questions.length}
+                currentQuestion={currentQuestion}
+                answeredQuestions={answeredIndices}
+                markedQuestions={markedIndices}
+                onQuestionClick={setCurrentQuestion}
+              />
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-3">Summary</h3>
+              <div className="bg-muted p-4 rounded-lg space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span>Total Questions</span>
+                  <span className="font-medium">{test.questions.length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Answered</span>
+                  <span className="font-medium">{Object.keys(answers).length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Marked for Review</span>
+                  <span className="font-medium">{markedQuestions.size}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Unanswered</span>
+                  <span className="font-medium">
+                    {test.questions.length - Object.keys(answers).length}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <Button onClick={handleSubmitTest} className="w-full gap-2">
+              <Check className="h-4 w-4" />
+              Submit Test
+            </Button>
           </div>
         </div>
       </div>

@@ -1,35 +1,33 @@
-import { lazy, Suspense } from 'react';
-import { Route } from 'wouter';
-import { Loader2 } from 'lucide-react';
+import { Route, Switch } from "wouter";
+import HomePage from "./pages/HomePage";
+import AuthPage from "./pages/AuthPage";
 import { Toaster } from "@/components/ui/toaster";
+import DashboardPage from "./pages/DashboardPage";
+import SubjectPage from "./pages/SubjectPage";
+import TestPage from "./pages/TestPage";
+import FullMockTestPage from "./pages/FullMockTestPage";
+import CertificatePage from "./pages/CertificatePage";
+import CheckoutPage from "./pages/CheckoutPage";
+import ProfilePage from "./pages/ProfilePage";
+import InterviewResourcesPage from "./pages/InterviewResourcesPage";
 
-const HomePage = lazy(() => import('./pages/HomePage'));
-const AuthPage = lazy(() => import('./pages/AuthPage'));
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const SubjectPage = lazy(() => import('./pages/SubjectPage'));
-const TestPage = lazy(() => import('./pages/TestPage'));
-const FullMockTestPage = lazy(() => import('./pages/FullMockTestPage'));
-
-const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-  </div>
-);
-
-function App() {
+export default function App() {
   return (
     <>
-      <Suspense fallback={<LoadingSpinner />}>
+      <Toaster />
+      <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/auth" component={AuthPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/subjects/:subject" component={SubjectPage} />
         <Route path="/subjects/:subject/test" component={TestPage} />
         <Route path="/full-mock-test" component={FullMockTestPage} />
-      </Suspense>
-      <Toaster />
+        <Route path="/certificates" component={CertificatePage} />
+        <Route path="/checkout" component={CheckoutPage} />
+        <Route path="/checkout/:package" component={CheckoutPage} />
+        <Route path="/profile" component={ProfilePage} />
+        <Route path="/interview-resources" component={InterviewResourcesPage} />
+      </Switch>
     </>
   );
 }
-
-export default App;

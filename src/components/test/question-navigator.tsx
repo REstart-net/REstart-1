@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 interface QuestionNavigatorProps {
   totalQuestions: number;
   currentQuestion: number;
-  answeredQuestions: Record<string, number>;
-  markedQuestions: Set<number>;
+  answeredQuestions: number[] | Record<string, number>;
+  markedQuestions: number[] | Set<number>;
   onQuestionSelect: (index: number) => void;
 }
 
@@ -17,6 +17,16 @@ export function QuestionNavigator({
   markedQuestions,
   onQuestionSelect,
 }: QuestionNavigatorProps) {
+  // Convert answeredQuestions to array of indices if it's an object
+  const answeredIndices = Array.isArray(answeredQuestions) 
+    ? answeredQuestions 
+    : Object.keys(answeredQuestions).map(() => 1).map((_, i) => i);
+
+  // Convert markedQuestions to array if it's a Set
+  const markedIndices = Array.isArray(markedQuestions) 
+    ? markedQuestions 
+    : Array.from(markedQuestions);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -33,8 +43,8 @@ export function QuestionNavigator({
             className={cn(
               "h-8 w-8 p-0",
               currentQuestion === i && "border-primary",
-              answeredQuestions[i] !== undefined && "bg-primary/10",
-              markedQuestions.has(i) && "ring-2 ring-yellow-500"
+              answeredIndices.includes(i) && "bg-primary/10",
+              markedIndices.includes(i) && "ring-2 ring-yellow-500"
             )}
             onClick={() => onQuestionSelect(i)}
           >

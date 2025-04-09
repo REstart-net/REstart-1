@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useParams } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TestTimer } from "@/components/test/test-timer";
@@ -285,6 +285,7 @@ export default function FullMockTestPage() {
         duration={totalDuration}
         totalQuestions={subjects.length * 30}
         onStart={startTest}
+        isFullMockTest={true}
       />
     );
   }
@@ -521,7 +522,9 @@ export default function FullMockTestPage() {
               <QuestionNavigator
                 totalQuestions={currentTest.questions.length}
                 currentQuestion={currentQuestion}
-                answeredQuestions={answers[currentSubject] || {}}
+                answeredQuestions={Object.keys(answers[currentSubject] || {}).map(id => 
+                  currentTest.questions.findIndex(q => q.id === id)
+                ).filter(index => index !== -1)}
                 markedQuestions={markedQuestions[currentSubject] || new Set()}
                 onQuestionSelect={setCurrentQuestion}
               />
@@ -536,6 +539,10 @@ export default function FullMockTestPage() {
                     Exiting fullscreen or switching tabs may result in test termination. 
                     You have {3 - exitAttempts} warnings remaining.
                   </p>
+                  <div className="flex items-center gap-2 mt-2 text-xs">
+                    <div className={`h-2 w-2 rounded-full ${isFullScreen ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <span>{isFullScreen ? 'Fullscreen active' : 'Fullscreen inactive'}</span>
+                  </div>
                 </CardContent>
               </Card>
               

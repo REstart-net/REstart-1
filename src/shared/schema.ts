@@ -6,7 +6,8 @@ export const insertUserSchema = z.object({
   fullName: z.string().min(2),
   phoneNumber: z.string().regex(/^\d{10}$/, "Must be a 10-digit number"),
   passingYear: z.number().int().min(1900).max(new Date().getFullYear() + 5),
-  isNsatRegistered: z.boolean()
+  isNsatRegistered: z.boolean(),
+  needsInterviewPrep: z.boolean()
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

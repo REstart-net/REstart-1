@@ -4,14 +4,57 @@ import { Clock, FileText, AlertTriangle, Lock, Shield, Eye, CheckSquare } from "
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Subject } from "@/shared/schema";
 
 interface TestInstructionsProps {
   duration: number;
   totalQuestions: number;
   onStart: () => void;
+  subject?: Subject;
+  isFullMockTest?: boolean;
 }
 
-export function TestInstructions({ duration, totalQuestions, onStart }: TestInstructionsProps) {
+// Subject-specific instructions
+const subjectInstructions = {
+  "Basic Mathematics": {
+    title: "Basic Mathematics Test",
+    description: "Test your proficiency in fundamental mathematical concepts and operations",
+    notes: [
+      "Use the provided virtual calculator for complex calculations",
+      "Pay attention to units when solving measurement problems",
+      "Show your work for partial credit on multi-step problems"
+    ]
+  },
+  "Advanced Mathematics": {
+    title: "Advanced Mathematics Test",
+    description: "Assess your understanding of advanced mathematical concepts and problem-solving skills",
+    notes: [
+      "Graphing tools are available for coordinate geometry questions",
+      "Formula sheet is accessible via the reference tab",
+      "Simplify expressions and equations in your final answers"
+    ]
+  },
+  "English": {
+    title: "English Proficiency Test",
+    description: "Evaluate your reading comprehension, vocabulary, and grammar skills",
+    notes: [
+      "Read passages carefully before answering comprehension questions",
+      "Pay attention to context when selecting vocabulary answers",
+      "Grammar questions require understanding of standard English rules"
+    ]
+  },
+  "Logical Reasoning": {
+    title: "Logical Reasoning Test",
+    description: "Test your analytical thinking and problem-solving abilities",
+    notes: [
+      "Use scratch paper for diagramming logic puzzles",
+      "Track negations carefully in conditional reasoning questions",
+      "Avoid common logical fallacies in argument analysis"
+    ]
+  }
+};
+
+export function TestInstructions({ duration, totalQuestions, onStart, subject, isFullMockTest = false }: TestInstructionsProps) {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
 
@@ -23,6 +66,22 @@ export function TestInstructions({ duration, totalQuestions, onStart }: TestInst
     onStart();
   };
 
+  const getCardTitle = () => {
+    if (isFullMockTest) {
+      return "NSAT Full Mock Test";
+    }
+    return subject ? subjectInstructions[subject]?.title || `${subject} Test` : "NSAT Practice Test";
+  };
+
+  const getDescription = () => {
+    if (isFullMockTest) {
+      return "This comprehensive test covers all NSAT subjects and simulates the actual exam environment";
+    }
+    return subject 
+      ? subjectInstructions[subject]?.description || `Test your knowledge in ${subject}`
+      : "This practice test helps you prepare for the NSAT exam";
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,9 +90,9 @@ export function TestInstructions({ duration, totalQuestions, onStart }: TestInst
     >
       <Card>
         <CardHeader className="text-center border-b pb-6">
-          <CardTitle className="text-3xl">NSAT Full Mock Test</CardTitle>
+          <CardTitle className="text-3xl">{getCardTitle()}</CardTitle>
           <p className="text-muted-foreground mt-2">
-            This comprehensive test covers all NSAT subjects and simulates the actual exam environment
+            {getDescription()}
           </p>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
@@ -61,50 +120,73 @@ export function TestInstructions({ duration, totalQuestions, onStart }: TestInst
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold">Test Format</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                {
-                  subject: "Basic Mathematics",
-                  questions: 30,
-                  time: 45,
-                  icon: <FileText className="h-4 w-4 text-blue-500" />
-                },
-                {
-                  subject: "Advanced Mathematics",
-                  questions: 30,
-                  time: 45,
-                  icon: <FileText className="h-4 w-4 text-purple-500" />
-                },
-                {
-                  subject: "English",
-                  questions: 30,
-                  time: 45,
-                  icon: <FileText className="h-4 w-4 text-green-500" />
-                },
-                {
-                  subject: "Logical Reasoning",
-                  questions: 30,
-                  time: 45,
-                  icon: <FileText className="h-4 w-4 text-orange-500" />
-                }
-              ].map((subject, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
-                  {subject.icon}
-                  <div className="flex-1">
-                    <p className="font-medium">{subject.subject}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {subject.questions} questions • {subject.time} minutes
-                    </p>
+          {isFullMockTest && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">Test Format</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  {
+                    subject: "Basic Mathematics",
+                    questions: 30,
+                    time: 45,
+                    icon: <FileText className="h-4 w-4 text-blue-500" />
+                  },
+                  {
+                    subject: "Advanced Mathematics",
+                    questions: 30,
+                    time: 45,
+                    icon: <FileText className="h-4 w-4 text-purple-500" />
+                  },
+                  {
+                    subject: "English",
+                    questions: 30,
+                    time: 45,
+                    icon: <FileText className="h-4 w-4 text-green-500" />
+                  },
+                  {
+                    subject: "Logical Reasoning",
+                    questions: 30,
+                    time: 45,
+                    icon: <FileText className="h-4 w-4 text-orange-500" />
+                  }
+                ].map((subj, index) => (
+                  <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+                    {subj.icon}
+                    <div className="flex-1">
+                      <p className="font-medium">{subj.subject}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {subj.questions} questions • {subj.time} minutes
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Important Instructions</h3>
+            
+            {/* Subject-specific instructions */}
+            {subject && subjectInstructions[subject]?.notes && (
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-4">
+                <div className="flex items-start gap-3">
+                  <FileText className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-blue-500">Subject Specific Instructions</h4>
+                    <ul className="space-y-2 mt-2 text-sm">
+                      {subjectInstructions[subject].notes.map((note, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <CheckSquare className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-muted-foreground">{note}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
@@ -150,12 +232,14 @@ export function TestInstructions({ duration, totalQuestions, onStart }: TestInst
                 <span className="font-medium text-primary">3.</span>
                 Questions can be marked for review and revisited before final submission.
               </li>
+              {!subject && (
+                <li className="flex items-start gap-2">
+                  <span className="font-medium text-primary">4.</span>
+                  You can switch between subjects during the test using the tabs at the top.
+                </li>
+              )}
               <li className="flex items-start gap-2">
-                <span className="font-medium text-primary">4.</span>
-                You can switch between subjects during the test using the tabs at the top.
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-medium text-primary">5.</span>
+                <span className="font-medium text-primary">{subject ? '4' : '5'}.</span>
                 Ensure you have a stable internet connection throughout the test.
               </li>
             </ul>
@@ -195,10 +279,12 @@ export function TestInstructions({ duration, totalQuestions, onStart }: TestInst
             )}
             
             <Button onClick={handleStartTest} className="w-full">
-              Start Full Mock Test
+              Start {isFullMockTest ? "Full Mock Test" : subject ? `${subject} Test` : "Test"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              This test simulates the actual NSAT exam environment and difficulty level.
+              {isFullMockTest 
+                ? "This test simulates the actual NSAT exam environment and difficulty level." 
+                : "This practice test helps you prepare for the NSAT exam."}
             </p>
           </div>
         </CardContent>

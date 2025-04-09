@@ -331,7 +331,7 @@ export default function AuthPage() {
                         name="isNsatRegistered"
                         render={({ field }) => (
                           <FormItem className="space-y-3">
-                            <FormLabel>Are you already registered for NSAT exam?</FormLabel>
+                            <FormLabel>Are you registered for NSAT?</FormLabel>
                             <FormControl>
                               <RadioGroup
                                 onValueChange={(value) => {
@@ -342,6 +342,41 @@ export default function AuthPage() {
                                   }
                                 }}
                                 defaultValue={field.value.toString()}
+                                className="flex flex-col space-y-1"
+                              >
+                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <RadioGroupItem value="true" />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    Yes
+                                  </FormLabel>
+                                </FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                  <FormControl>
+                                    <RadioGroupItem value="false" />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    No
+                                  </FormLabel>
+                                </FormItem>
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={registerForm.control}
+                        name="needsInterviewPrep"
+                        render={({ field }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel>Do you need interview preparation?</FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={(value) => field.onChange(value === "true")}
+                                defaultValue={field.value ? "true" : "false"}
                                 className="flex flex-col space-y-1"
                               >
                                 <FormItem className="flex items-center space-x-3 space-y-0">
