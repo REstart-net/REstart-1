@@ -1714,21 +1714,21 @@ export default function HomePage() {
                       name: "Chiranjeev Agrawal",
                       role: "CEO",
                       bio: "Visionary leader with extensive experience in education technology and NSAT preparation.",
-                      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop",
+                      image: "https://imagekit.io/tools/asset-public-link?detail=%7B%22name%22%3A%22Screenshot%202025-04-13%20at%207.38.38%E2%80%AFPM.png%22%2C%22type%22%3A%22image%2Fpng%22%2C%22signedurl_expire%22%3A%222028-04-12T14%3A08%3A43.713Z%22%2C%22signedUrl%22%3A%22https%3A%2F%2Fmedia-hosting.imagekit.io%2Fda14168ed1ca44ca%2FScreenshot%25202025-04-13%2520at%25207.38.38%25E2%2580%25AFPM.png%3FExpires%3D1839161324%26Key-Pair-Id%3DK2ZIVPTIP2VGHC%26Signature%3Dw4r9q8E8~FxRGFZiEv-PJphyisOKomkdS7Iu-4p0QN05JW17w6ZlM-f3f-EBJ9co6DNgp0Sf4OBAcDhj0CIt8jQw3BIfM8dLWilcGLn-QN~Zdim9tSc5w57lLDvQymZ1h9xfKR2Zx0xP1RJu~s5KAiHTLM0kWd0Gi469Tcfb9SO3nnxwOObqoZD~eFUQ02filsFGhhJlr~68cRfw0m1XyZK5JhouHsnLJnv2F~hevconAbMv1CP9BUCsCnQoGET8LerMqCFe5Dj9uNLKOVZ7WOb3LkcM63ItxWZK~rvX3C1vkjHCnspHdLTRWfFaLU-LYw5jTL036PH2Fa0BtPLbHg__%22%7D",
                       achievements: ["Education Innovator", "Tech Entrepreneur",]
                     },
                     {
                       name: "Sahil Khan",
                       role: "Managing Director",
                       bio: "Strategic leader focused on expanding educational access and improving student outcomes.",
-                      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop",
+                      image: "https://imagekit.io/tools/asset-public-link?detail=%7B%22name%22%3A%22Screenshot%202025-04-13%20at%207.39.01%E2%80%AFPM.png%22%2C%22type%22%3A%22image%2Fpng%22%2C%22signedurl_expire%22%3A%222028-04-12T14%3A09%3A08.196Z%22%2C%22signedUrl%22%3A%22https%3A%2F%2Fmedia-hosting.imagekit.io%2Fadd0c5e8c02c46fa%2FScreenshot%25202025-04-13%2520at%25207.39.01%25E2%2580%25AFPM.png%3FExpires%3D1839161348%26Key-Pair-Id%3DK2ZIVPTIP2VGHC%26Signature%3DFpcSThqmzHli-v5O1ZL7OW4eQkw6~1A-bMMpNoHQVGcitsKckc3ge2vegRsRNAczOaW0u1lKuF7gr62C6-8Kbc17m6FvqtHxhG~WbtaPso2WcoJaoaYPWDjMg3tY8wqkPBEY1NQ4ws-ntkp-cDnkQmo6Ubl3M678Swsi10cu99X8x44xqM3JfpF-QSpM1fTB7aRbB18cH0fj6iIhuGkvReoG7icveG77EA0pvRR1T7JEA8hZA~AmKf3VaWLmPh-AI3oPnVZKCCqQqQ6QI12a9YVpS-ckXgbiwtfFXyhvNHNbGPNBUocPj2iXDdRNS49Wo9o6thw2Lk6Id0aeB-YKAQ__%22%7D",
                       achievements: ["Education Management", "Operational Excellence"]
                     },
                     {
                       name: "Aditya Prakash",
                       role: "CTO",
                       bio: "Technology expert specializing in educational platforms and adaptive learning systems.",
-                      image: "https://media-hosting.imagekit.io//57aecc498b6a437f/WhatsApp%20Image%202025-03-15%20at%2018.16.07.jpeg?Expires=1836650819&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=qkB1-bWSNagTQjL5FNVWCaiETUSPSDkBRCMVFFe-dRQxDbo6LTqWXKcKrM7hcTixuoSBJj0VRUY8jyPqD4X3TGRJ2st8Fmqs5JPWr-0BHlxHQVTM1fLF4Ilp0EPPljyk0beLsFKeploe-4i0mx0B3FWpYqOmBNPacvcOnogXjHLb-s8d4c8UdE11n4LtVupqcRidGP7kxnGMIXtZ8EOostkYx8OMTcRP4ncuiUyhU3mEvTmAy6RN5jmLxzMKSnHzSjbE4DMHE~qRNDXr8~kumbxEzIimKy-2~8TsEzj1zH8~To6qRFZc20cj7ufVe1okzdpH0NyHyW0pxQO0QpzqIg__",
+                      image: "https://imagekit.io/tools/asset-public-link?detail=%7B%22name%22%3A%22Screenshot%202025-04-13%20at%207.28.01%E2%80%AFPM.png%22%2C%22type%22%3A%22image%2Fpng%22%2C%22signedurl_expire%22%3A%222028-04-12T13%3A59%3A09.052Z%22%2C%22signedUrl%22%3A%22https%3A%2F%2Fmedia-hosting.imagekit.io%2F9ddbac2cd7e74591%2FScreenshot%25202025-04-13%2520at%25207.28.01%25E2%2580%25AFPM.png%3FExpires%3D1839160749%26Key-Pair-Id%3DK2ZIVPTIP2VGHC%26Signature%3D2JF4UtI0dxRHKfAj~F7IbwfNbBPEwBbp5qddez2TVKD-Puj6oztqsZg5m41HLa0HYK5wRwlJPQWl7LqQ6sCVfDdWmCTLz5vnr12FU0HTJxvL1sS8y2Z~gQmLiKTCmPkjXsZ-DO59yYpfhDHHTdjBIled~NfgtM67vlRGSE8ia22GfphUsYnXtOXEPTQL9cXPTXVmTe9EE6bdTWvlTIq0Fpu6nqh1w5vemMJGtgoepnu04eFbN9QYHMw~EHCit1rYTFQ-tzXTmqHSxfteGXLoTLc0BdWkyzIeG99ceOvJdeytit93XEj1brt9KkRn7vfl3ejayv7WJwD~7sJilCiKKA__%22%7D",
                       achievements: ["Full-Stack Developer", "AI Learning Systems", "EdTech Innovation"]
                     }
                   ].map((founder, index) => (
