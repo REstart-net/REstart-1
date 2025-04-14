@@ -464,7 +464,7 @@ const SupportUsSection = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Heart className="h-4 w-4 text-red-500 animate-pulse" />
-              <p className="text-sm font-medium">Support our mission to make quality NSAT preparation accessible to all</p>
+              <p className="text-sm font-medium">Support our mission to make REstart better and get you the best NSAT guidanace</p>
             </div>
             
             <Button 
@@ -490,17 +490,17 @@ const SupportUsSection = () => {
                   <div className="space-y-2">
                     <h3 className="font-medium">Why Support Us?</h3>
                     <p className="text-sm text-muted-foreground">
-                      Your contribution helps us develop more free resources and provide scholarships to underprivileged students.
+                      Your support helps us create more life-changing content and grow Restart into a movement. Every contribution counts 💙
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
-                        Free Resources
+                        Empower
                       </Badge>
                       <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
-                        Scholarships
+                        Sustain
                       </Badge>
                       <Badge variant="outline" className="bg-purple-500/10 text-purple-500 border-purple-500/20">
-                        Research
+                        Grow
                       </Badge>
                     </div>
                   </div>
@@ -1544,7 +1544,7 @@ export default function HomePage() {
                     Our Locations
                   </Badge>
                   <h2 className="text-4xl font-bold mb-4">
-                    <ScrollHighlightText>Visit Our Campuses</ScrollHighlightText>
+                    <ScrollHighlightText>NST Campuses</ScrollHighlightText>
                   </h2>
                   <p className="text-muted-foreground max-w-2xl mx-auto">
                     Experience our state-of-the-art facilities designed for optimal learning
