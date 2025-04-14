@@ -91,3 +91,99 @@ export async function updateProgress(
     if (materialsError) throw materialsError;
   }
 }
+
+// Track a test attempt for a user
+export async function recordTestAttempt(
+  userId: string,
+  subject: Subject,
+  testId: string,
+  score: number
+) {
+  const { error } = await supabase
+    .from('user_test_attempts')
+    .insert({
+      user_id: userId,
+      subject,
+      test_id: testId,
+      score
+    });
+
+  if (error) throw error;
+}
+
+// Check if a user has already attempted a test for a subject
+export async function hasAttemptedTest(userId: string, subject: Subject): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('user_test_attempts')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('subject', subject)
+    .maybeSingle();
+
+  if (error) throw error;
+  return !!data; // Return true if an attempt exists
+}
+
+// Verify a referral code
+export async function verifyReferralCode(referralCode: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('referral_codes')
+      .select('is_valid')
+      .eq('code', referralCode)
+      .single();
+    
+    if (error) throw error;
+    return data?.is_valid || false;
+  } catch (error) {
+    console.error('Error verifying referral code:', error);
+    return false;
+  }
+}
+
+// Store a verified referral code for a user
+export async function storeUserReferral(userId: string, referralCode: string, referredEmail: string) {
+  try {
+    const { error } = await supabase
+      .from('user_referrals')
+      .insert({
+        user_id: userId,
+        referral_code: referralCode,
+        email: referredEmail,
+        verified_at: new Date().toISOString()
+      });
+    
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error storing user referral:', error);
+    throw error;
+  }
+}
+
+export const verifyNsatRegistration = async (email: string, referralCode?: string) => {
+  try {
+    // First, check API with Newton School
+    const response = await fetch(
+      `https://django.newtonschool.co/api/v1/marketing/refer/s/btech-computer-science/check_status?email=${encodeURIComponent(email)}${referralCode ? `&referral=${encodeURIComponent(referralCode)}` : ''}`,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to verify NSAT registration');
+    }
+
+    const data = await response.json();
+    return {
+      ...data,
+      isRegistered: data.status === 'registered' || data.status === 'verified'
+    };
+  } catch (error) {
+    console.error('Error verifying NSAT registration:', error);
+    throw error;
+  }
+};

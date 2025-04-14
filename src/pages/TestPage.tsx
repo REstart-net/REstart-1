@@ -1,22 +1,28 @@
 import { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { TestTimer } from "@/components/test/test-timer";
 import { QuestionCard } from "@/components/test/question-card";
 import { QuestionNavigator } from "@/components/test/question-navigator";
 import { TestInstructions } from "@/components/test/test-instructions";
-import { generateTest, calculateScore } from "@/lib/test-generator";
+import { generateTest, calculateScore, generateFullTest } from "@/lib/test-generator";
 import { useProgress } from "@/hooks/use-progress";
 import { Subject, subjects } from "@/shared/schema";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Flag, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, Check, AlertCircle, Star, CheckCircle, Zap, Award } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { hasAttemptedTest, recordTestAttempt } from "@/lib/api";
+import { ReferralVerification } from "@/components/ReferralVerification";
 
 export default function TestPage() {
   const [, setLocation] = useLocation();
   const { subject: encodedSubject } = useParams<{ subject: string }>();
   const subject = decodeURIComponent(encodedSubject) as Subject;
   const { updateProgress } = useProgress();
+  const { user } = useAuth();
+  const [location] = useLocation();
+  const isFullTest = location.includes('/full-test');
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +32,9 @@ export default function TestPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set());
   const [showResults, setShowResults] = useState(false);
+  const [hasAttempted, setHasAttempted] = useState(false);
+  const [showReferralVerification, setShowReferralVerification] = useState(false);
+  const [hasNsatVerification, setHasNsatVerification] = useState(false);
 
   // Validate subject and redirect if invalid
   useEffect(() => {
@@ -36,13 +45,39 @@ export default function TestPage() {
     }
   }, [subject, setLocation]);
 
+  // Check if user has already attempted the test
+  useEffect(() => {
+    async function checkPreviousAttempt() {
+      if (!user) return;
+      
+      try {
+        const attempted = await hasAttemptedTest(user.id, subject);
+        setHasAttempted(attempted);
+      } catch (err) {
+        console.error(`Error checking test attempts:`, err);
+      }
+    }
+    
+    if (subjects.includes(subject)) {
+      checkPreviousAttempt();
+    }
+  }, [subject, user]);
+
   useEffect(() => {
     async function loadTest() {
       try {
-        console.log(`Loading test for subject: ${subject}`);
+        console.log(`Loading ${isFullTest ? 'full' : 'practice'} test for subject: ${subject}`);
         setLoading(true);
-        const generatedTest = await generateTest(subject);
-        console.log(`Test loaded successfully for ${subject} with ${generatedTest.questions.length} questions`);
+        
+        let generatedTest;
+        if (isFullTest) {
+          generatedTest = await generateFullTest(subject);
+          console.log(`Full test loaded successfully for ${subject} with ${generatedTest.questions.length} questions`);
+        } else {
+          generatedTest = await generateTest(subject);
+          console.log(`Practice test loaded successfully for ${subject} with ${generatedTest.questions.length} questions`);
+        }
+        
         setTest(generatedTest);
         setLoading(false);
       } catch (err) {
@@ -51,10 +86,12 @@ export default function TestPage() {
         setLoading(false);
       }
     }
-    if (subjects.includes(subject)) {
+    if (subjects.includes(subject) && !hasAttempted) {
       loadTest();
+    } else if (hasAttempted) {
+      setLoading(false);
     }
-  }, [subject]);
+  }, [subject, hasAttempted, isFullTest]);
 
   // Monitor fullscreen status
   useEffect(() => {
@@ -101,12 +138,21 @@ export default function TestPage() {
   };
 
   const handleSubmitTest = async () => {
-    if (!test) return;
+    if (!test || !user) return;
     
     const result = calculateScore(test, answers);
     setShowResults(true);
 
     try {
+      // Record this test attempt
+      await recordTestAttempt(
+        user.id,
+        subject,
+        test.id,
+        (result.score / result.total) * 100
+      );
+      
+      // Update user progress
       await updateProgress(subject, {
         completedTests: 1,
         totalScore: (result.score / result.total) * 100,
@@ -131,7 +177,7 @@ export default function TestPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <p className="ml-3 text-muted-foreground">Loading test for {subject}...</p>
+        <p className="ml-3 text-muted-foreground">Loading {isFullTest ? 'full' : 'practice'} test for {subject}...</p>
       </div>
     );
   }
@@ -150,6 +196,203 @@ export default function TestPage() {
     );
   }
 
+  if (hasAttempted) {
+    if (showReferralVerification && !hasNsatVerification && user) {
+      return (
+        <div className="min-h-screen flex items-center justify-center py-8 px-4">
+          <ReferralVerification 
+            userId={user.id}
+            userEmail={user.email || ''}
+            onVerified={() => {
+              setHasNsatVerification(true);
+              setHasAttempted(false); // Allow the user to take the test again
+              setLoading(true); // Trigger reloading the test
+            }}
+            onSkip={() => setShowReferralVerification(false)}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="min-h-screen flex flex-col items-center py-8 px-4">
+        <Card className="max-w-md mb-8">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-amber-500" />
+              <CardTitle>Test Already Attempted</CardTitle>
+            </div>
+            <CardDescription>
+              You have already taken this test. Each test can only be attempted once.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Verify your NSAT registration with a referral code to unlock unlimited test attempts.
+            </p>
+          </CardContent>
+          <CardFooter className="flex gap-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setLocation(`/subjects/${encodedSubject}`)}
+            >
+              Return to Subject
+            </Button>
+            <Button 
+              onClick={() => setShowReferralVerification(true)}
+              variant="default"
+            >
+              Verify NSAT Registration
+            </Button>
+          </CardFooter>
+        </Card>
+        
+        {/* Upgrade Package Section */}
+        <div className="max-w-4xl w-full">
+          <h2 className="text-2xl font-bold text-center mb-6">Unlock Unlimited Test Attempts</h2>
+          <p className="text-center text-muted-foreground mb-8">
+            Upgrade your package to take unlimited tests and maximize your preparation!
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Starter Package */}
+            <Card className="border-primary/20 hover:border-primary transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Starter</span>
+                  <Star className="h-5 w-5 text-amber-500" />
+                </CardTitle>
+                <CardDescription>Essential NSAT preparation</CardDescription>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold">₹399</p>
+                  <p className="text-sm text-muted-foreground">or ₹149/month</p>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">10 practice tests per subject</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Performance tracking dashboard</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Basic study materials</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Email support</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" onClick={() => setLocation('/checkout/starter')}>
+                  Get Started
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Premium Package */}
+            <Card className="border-primary relative shadow-lg">
+              <div className="absolute -top-3 left-0 right-0 flex justify-center">
+                <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                  MOST POPULAR
+                </span>
+              </div>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Premium</span>
+                  <Zap className="h-5 w-5 text-primary" />
+                </CardTitle>
+                <CardDescription>Complete NSAT success kit</CardDescription>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold">₹899</p>
+                  <p className="text-sm text-muted-foreground">or ₹299/month</p>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm"><span className="font-medium">Unlimited</span> practice tests</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Advanced analytics & insights</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Comprehensive study materials</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Priority email & chat support</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">2 free mock interviews</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" variant="default" onClick={() => setLocation('/checkout/premium')}>
+                  Go Premium
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Ultimate Package */}
+            <Card className="border-primary/20 hover:border-primary transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Ultimate</span>
+                  <Award className="h-5 w-5 text-violet-500" />
+                </CardTitle>
+                <CardDescription>Advanced NSAT mastery</CardDescription>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold">₹1499</p>
+                  <p className="text-sm text-muted-foreground">or ₹449/month</p>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm"><span className="font-medium">Everything</span> in Premium</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">1-on-1 mentorship (4 sessions)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Personalized study plan</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">4 mock interviews with feedback</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Direct admission support</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" onClick={() => setLocation('/checkout/ultimate')}>
+                  Go Ultimate
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!test) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -164,14 +407,17 @@ export default function TestPage() {
     );
   }
 
-  if (!testStarted) {
+  if (!testStarted && test) {
     return (
-      <TestInstructions
-        duration={test?.duration || 60}
-        totalQuestions={test?.questions.length || 0}
-        onStart={startTest}
-        subject={subject}
-      />
+      <div className="min-h-screen pt-8 px-4 md:px-8">
+        <TestInstructions 
+          subject={subject}
+          totalQuestions={test.questions.length}
+          duration={test.duration}
+          onStart={startTest}
+          isFullMockTest={isFullTest}
+        />
+      </div>
     );
   }
 
@@ -183,7 +429,7 @@ export default function TestPage() {
         animate={{ opacity: 1 }}
         className="container mx-auto px-4 py-8 max-w-4xl"
       >
-        <Card className="p-6">
+        <Card className="p-6 mb-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold mb-2">Test Completed!</h2>
             <p className="text-muted-foreground">
@@ -209,6 +455,149 @@ export default function TestPage() {
             </Button>
           </div>
         </Card>
+
+        {/* Upgrade Package Section */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-center mb-6">Unlock More Practice Tests</h2>
+          <p className="text-center text-muted-foreground mb-8">
+            You have used your free test attempt. Upgrade your package to unlock unlimited tests and boost your preparation!
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Starter Package */}
+            <Card className="border-primary/20 hover:border-primary transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Starter</span>
+                  <Star className="h-5 w-5 text-amber-500" />
+                </CardTitle>
+                <CardDescription>Essential NSAT preparation</CardDescription>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold">₹399</p>
+                  <p className="text-sm text-muted-foreground">or ₹149/month</p>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">10 practice tests per subject</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Performance tracking dashboard</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Basic study materials</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Email support</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" onClick={() => setLocation('/checkout/starter')}>
+                  Get Started
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Premium Package */}
+            <Card className="border-primary relative shadow-lg">
+              <div className="absolute -top-3 left-0 right-0 flex justify-center">
+                <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                  MOST POPULAR
+                </span>
+              </div>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Premium</span>
+                  <Zap className="h-5 w-5 text-primary" />
+                </CardTitle>
+                <CardDescription>Complete NSAT success kit</CardDescription>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold">₹899</p>
+                  <p className="text-sm text-muted-foreground">or ₹299/month</p>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm"><span className="font-medium">Unlimited</span> practice tests</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Advanced analytics & insights</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Comprehensive study materials</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Priority email & chat support</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">2 free mock interviews</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" variant="default" onClick={() => setLocation('/checkout/premium')}>
+                  Go Premium
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Ultimate Package */}
+            <Card className="border-primary/20 hover:border-primary transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Ultimate</span>
+                  <Award className="h-5 w-5 text-violet-500" />
+                </CardTitle>
+                <CardDescription>Advanced NSAT mastery</CardDescription>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold">₹1499</p>
+                  <p className="text-sm text-muted-foreground">or ₹449/month</p>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm"><span className="font-medium">Everything</span> in Premium</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">1-on-1 mentorship (4 sessions)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Personalized study plan</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">4 mock interviews with feedback</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Direct admission support</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" onClick={() => setLocation('/checkout/ultimate')}>
+                  Go Ultimate
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
       </motion.div>
     );
   }
@@ -295,7 +684,7 @@ export default function TestPage() {
                 currentQuestion={currentQuestion}
                 answeredQuestions={answeredIndices}
                 markedQuestions={markedIndices}
-                onQuestionClick={setCurrentQuestion}
+                onQuestionSelect={setCurrentQuestion}
               />
             </div>
 

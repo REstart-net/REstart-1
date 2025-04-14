@@ -20,151 +20,102 @@ interface Test {
 
 export async function generateTest(subject: Subject): Promise<Test> {
   try {
-    console.log(`Attempting to generate test for ${subject}...`);
-    const dbQuestions = await dbGenerateTest(subject, {
-      questionCount: 30,
-    });
-
-    console.log(`Successfully fetched ${dbQuestions.length} questions for ${subject}`);
+    // In a real app, this would fetch data from your backend
+    // For now, we'll use mock data
     
-    if (!dbQuestions || dbQuestions.length === 0) {
-      console.warn(`No questions returned from database for ${subject}, using fallback`);
-      return createFallbackTest(subject);
-    }
-
-    const questions = dbQuestions.map(q => ({
-      id: q.id,
-      text: q.text,
-      options: q.options,
-      correctAnswer: parseInt(q.correct_answer, 10),
-      explanation: q.explanation || 'No explanation provided for this question.',
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    
+    // Generate a random test ID
+    const testId = `test-${Math.random().toString(36).substring(2, 9)}`;
+    
+    // Create mock questions
+    const questions: Question[] = Array.from({ length: Math.floor(Math.random() * 10) + 15 }, (_, i) => ({
+      id: `q-${i}`,
+      text: `Sample question ${i+1} for ${subject}?`,
+      options: [
+        `Option A for question ${i+1}`,
+        `Option B for question ${i+1}`,
+        `Option C for question ${i+1}`,
+        `Option D for question ${i+1}`,
+      ],
+      correctAnswer: Math.floor(Math.random() * 4),
+      explanation: `Explanation for question ${i+1} in ${subject}`,
     }));
-
+    
     return {
-      id: `test-${Math.random().toString(36).substr(2, 9)}`,
+      id: testId,
       subject,
-      title: `${subject} Assessment`,
+      title: `Practice Test for ${subject}`,
       questions,
-      duration: 45, // 45 minutes per subject
-      totalMarks: questions.length
+      duration: 45, // 45 minutes
+      totalMarks: questions.length,
     };
   } catch (error) {
-    console.error(`Error generating test for ${subject}:`, error);
-    // Return a fallback test with dummy questions if database fetch fails
-    return createFallbackTest(subject);
+    console.error("Error generating test:", error);
+    throw new Error(`Failed to generate test for ${subject}`);
   }
 }
 
-function createFallbackTest(subject: Subject): Test {
-  console.log(`Creating fallback test for ${subject}`);
-  
-  // Subject-specific question generators
-  const questionGenerators = {
-    "Basic Mathematics": (i: number) => ({
-      text: `What is the result of ${i * 5} + ${i * 3}?`,
+export async function generateFullTest(subject: Subject): Promise<Test> {
+  try {
+    // In a real app, this would fetch a comprehensive test from your backend
+    // For now, we'll create a mock full test with 30 questions
+    
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    
+    // Generate a test ID for the full test
+    const testId = `full-test-${Math.random().toString(36).substring(2, 9)}`;
+    
+    // Create 30 mock questions covering all topics
+    const questions: Question[] = Array.from({ length: 30 }, (_, i) => ({
+      id: `q-${i}`,
+      text: `Comprehensive question ${i+1} for ${subject} full test?`,
       options: [
-        `${i * 5 + i * 3}`,
-        `${i * 5 + i * 3 + 1}`,
-        `${i * 5 + i * 3 - 1}`,
-        `${i * 5 + i * 3 + 2}`,
+        `Option A for question ${i+1}`,
+        `Option B for question ${i+1}`,
+        `Option C for question ${i+1}`,
+        `Option D for question ${i+1}`,
       ],
-    }),
-    "Advanced Mathematics": (i: number) => ({
-      text: `If f(x) = ${i}x² + ${i+1}x + ${i+2}, what is f(2)?`,
-      options: [
-        `${i * 4 + (i+1) * 2 + (i+2)}`,
-        `${i * 4 + (i+1) * 2 + (i+2) + 1}`,
-        `${i * 4 + (i+1) * 2 + (i+2) - 1}`,
-        `${i * 4 + (i+1) * 2 + (i+2) + 2}`,
-      ],
-    }),
-    "English": (i: number) => ({
-      text: `Choose the correct meaning of the word "${['Ameliorate', 'Benevolent', 'Capricious', 'Diligent', 'Ephemeral'][i % 5]}".`,
-      options: [
-        `${['To improve', 'Kind', 'Unpredictable', 'Hardworking', 'Short-lived'][i % 5]}`,
-        `${['To worsen', 'Cruel', 'Stable', 'Lazy', 'Permanent'][i % 5]}`,
-        `${['To maintain', 'Neutral', 'Logical', 'Average', 'Colorful'][i % 5]}`,
-        `${['To abandon', 'Selfish', 'Careful', 'Sleepy', 'Loud'][i % 5]}`,
-      ],
-    }),
-    "Logical Reasoning": (i: number) => ({
-      text: `In a sequence 2, 6, 12, 20, 30, what comes next?`,
-      options: [
-        "42",
-        "40",
-        "38",
-        "36",
-      ],
-    }),
-  } as Record<Subject, (i: number) => { text: string; options: string[] }>;
-  
-  // Fallback to generic questions if subject-specific generator not found
-  const getQuestion = (i: number) => {
-    const generator = questionGenerators[subject] || ((idx: number) => ({
-      text: `Sample ${subject} question ${idx + 1}`,
-      options: [
-        `Option A for question ${idx + 1}`,
-        `Option B for question ${idx + 1}`,
-        `Option C for question ${idx + 1}`,
-        `Option D for question ${idx + 1}`,
-      ],
+      correctAnswer: Math.floor(Math.random() * 4),
+      explanation: `Detailed explanation for full test question ${i+1} in ${subject}`,
     }));
     
-    return generator(i);
-  };
-
-  // Create dummy questions based on subject
-  const dummyQuestions: Question[] = Array.from({ length: 30 }, (_, i) => {
-    const question = getQuestion(i);
+    // Determine duration based on subject
+    let duration = 60; // default 60 minutes
+    if (subject === "English") {
+      duration = 45; // English tests are shorter
+    }
+    
     return {
-      id: `fallback-${subject}-${i}`,
-      text: question.text,
-      options: question.options,
-      correctAnswer: Math.floor(Math.random() * 4),
-      explanation: `This is a fallback question created because the database connection failed.`,
+      id: testId,
+      subject,
+      title: `Complete ${subject} Assessment`,
+      questions,
+      duration: duration,
+      totalMarks: questions.length,
     };
-  });
-
-  return {
-    id: `fallback-test-${Math.random().toString(36).substr(2, 9)}`,
-    subject,
-    title: `${subject} Assessment (Offline Mode)`,
-    questions: dummyQuestions,
-    duration: 45,
-    totalMarks: 30
-  };
+  } catch (error) {
+    console.error("Error generating full test:", error);
+    throw new Error(`Failed to generate full test for ${subject}`);
+  }
 }
 
-export function calculateScore(test: Test, answers: Record<string, number>): {
-  score: number;
-  total: number;
-  incorrectQuestions: { question: Question; selectedAnswer: number }[];
-} {
+export function calculateScore(test: Test, answers: Record<string, number>) {
   let score = 0;
-  const incorrectQuestions: { question: Question; selectedAnswer: number }[] = [];
-
-  test.questions.forEach((question) => {
-    const userAnswer = answers[question.id];
-    if (userAnswer === question.correctAnswer) {
+  let total = test.questions.length;
+  
+  for (const question of test.questions) {
+    if (answers[question.id] === question.correctAnswer) {
       score++;
-    } else if (userAnswer !== undefined) {
-      incorrectQuestions.push({
-        question,
-        selectedAnswer: userAnswer
-      });
-    } else {
-      // Unanswered questions are considered incorrect
-      incorrectQuestions.push({
-        question,
-        selectedAnswer: -1 // -1 indicates unanswered
-      });
     }
-  });
-
+  }
+  
   return {
     score,
-    total: test.questions.length,
-    incorrectQuestions
+    total,
+    percentage: (score / total) * 100
   };
 }
 

@@ -10,6 +10,7 @@ interface AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   setUser: (user: User | null) => void;
 }
 
@@ -35,6 +36,12 @@ const useAuthStore = create<AuthState>((set) => ({
     if (error) throw error;
     set({ user: null });
   },
+  resetPassword: async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
+  },
   setUser: (user) => set({ user, loading: false }),
 }));
 
@@ -54,7 +61,7 @@ function initializeAuth() {
 initializeAuth();
 
 export function useAuth() {
-  const { user, loading, signOut } = useAuthStore();
+  const { user, loading, signOut, resetPassword } = useAuthStore();
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: Pick<InsertUser, "email" | "password">) => {
@@ -84,11 +91,18 @@ export function useAuth() {
     },
   });
 
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (email: string) => {
+      await resetPassword(email);
+    },
+  });
+
   return {
     user,
     loading,
     signOut,
     loginMutation,
     registerMutation,
+    resetPasswordMutation,
   };
 }

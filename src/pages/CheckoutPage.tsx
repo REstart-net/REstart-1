@@ -69,6 +69,11 @@ export default function CheckoutPage() {
     return <Redirect to="/auth" />;
   }
 
+  // Redirect if user is already registered for NSAT
+  if (user.user_metadata?.is_nsat_registered) {
+    return <Redirect to="/dashboard" />;
+  }
+
   const handlePackageSelect = (pkg: Package) => {
     if (pkg.name === "Basic Package") {
       window.location.href = "https://www.newtonschool.co/newton-school-of-technology-nst/apply-referral?utm_source=referral&utm_medium=santoshpuvvada13&utm_campaign=btech-computer-science-portal-referral";

@@ -31,6 +31,17 @@ export interface UserProgress {
   [key: string]: SubjectProgress;
 }
 
+export const supportFormSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  subject: z.string().min(5, { message: "Subject must be at least 5 characters." }),
+  category: z.string({ required_error: "Please select a category." }),
+  priority: z.string({ required_error: "Please select a priority." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." })
+});
+
+export type SupportFormValues = z.infer<typeof supportFormSchema>;
+
 export const testSchema = z.object({
   id: z.string(),
   subject: z.enum(subjects),

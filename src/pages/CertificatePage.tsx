@@ -7,8 +7,8 @@ import { ScrollText, Award, ArrowLeft, Download, CheckCircle, ChevronRight, Cale
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
-import { subjects } from "@/shared/schema";
 import { useState } from "react";
+import { subjects } from "@/shared/schema";
 
 // Define the allowed colors type to provide type safety
 type CertificateColor = 'amber' | 'blue' | 'green' | 'purple';
@@ -28,8 +28,8 @@ interface Certificate {
 export default function CertificatePage() {
   const { user, loading } = useAuth();
   const { progress } = useProgress();
-  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"available" | "progress">("available");
+  const [, setLocation] = useLocation();
 
   if (loading) {
     return (
@@ -284,29 +284,32 @@ export default function CertificatePage() {
           </TabsContent>
         </Tabs>
 
-        <div className="mt-12">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Award className="h-6 w-6 text-blue-600" />
+        {/* NSAT Registration Card - Only show if user is not registered for NSAT */}
+        {!user?.user_metadata?.is_nsat_registered && (
+          <div className="mb-8">
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Award className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-1">Ready for NSAT Exam?</h3>
+                      <p className="text-muted-foreground">Register for the exam to earn your completion certificate</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-1">Ready for NSAT Exam?</h3>
-                    <p className="text-muted-foreground">Register for the exam to earn your completion certificate</p>
-                  </div>
+                  <Link href="/checkout">
+                    <Button className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto">
+                      Register for Exam
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
                 </div>
-                <Link href="/checkout">
-                  <Button className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto">
-                    Register for Exam
-                    <ChevronRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </main>
     </div>
   );

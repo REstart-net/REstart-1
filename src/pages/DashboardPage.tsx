@@ -8,10 +8,10 @@ import {
   FileText, GraduationCap, BookOpen, BrainCircuit, Award, Target,
   ChevronRight, Clock, Copy, Check, CreditCard, ScrollText,
   LayoutDashboard, BookOpenCheck, LogOut, Menu, X,
-  Bell, User, Search, Calendar, Network, Code, Users
+  Bell, User, Search, Calendar, Network, Code, Users, MessageSquare
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { subjects, type Subject } from "@/shared/schema";
+import { subjects } from "@/shared/schema";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
 const icons = {
@@ -36,6 +36,7 @@ const sidebarItems = [
   { name: "Certificates", icon: Award, href: "/certificates" },
   { name: "Mock Tests", icon: Target, href: "/full-mock-test" },
   { name: "Exam Dates", icon: Calendar, href: "/exam-dates" },
+  { name: "Support", icon: MessageSquare, href: "/support" },
 ];
 
 const interviewSidebarItems = [
@@ -48,7 +49,7 @@ const interviewSidebarItems = [
 
 export default function DashboardPage() {
   const { user, loading, signOut } = useAuth();
-  const { progress, isLoading: progressLoading } = useProgress();
+  const { progress } = useProgress();
   const [copied, setCopied] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [location] = useLocation();
@@ -64,6 +65,7 @@ export default function DashboardPage() {
     studyStreak: user?.user_metadata?.study_streak || 0,
     totalStudyTime: user?.user_metadata?.total_study_time || 0,
     completedTopics: user?.user_metadata?.completed_topics || [],
+    isNsatRegistered: user?.user_metadata?.is_nsat_registered || false,
     interviewPrepProgress: user?.user_metadata?.interview_prep_progress || {
       technical: 0,
       systemDesign: 0,
@@ -275,11 +277,11 @@ export default function DashboardPage() {
                       onClick={() => signOut && signOut()}
                     >
                       <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
+                      Sign Out
+                    </Button>
                   </CardContent>
                 </Card>
-            </div>
+              </div>
             </motion.aside>
           )}
         </AnimatePresence>
@@ -305,8 +307,8 @@ export default function DashboardPage() {
                       <span className="text-green-500">🔥 {userData.studyStreak} day streak</span>
                     </>
                   )}
-          </div>
-        </div>
+                </div>
+              </div>
               <div className="flex gap-3">
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -341,8 +343,8 @@ export default function DashboardPage() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-        </div>
-      </header>
+              </div>
+            </header>
 
             {/* Mobile welcome section */}
             <div className="lg:hidden mb-6">
@@ -371,7 +373,7 @@ export default function DashboardPage() {
                   <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/10">
                     <CardContent className="pt-5 pb-4">
                       <div className="flex items-center gap-3 mb-4">
-          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                           <Target className="h-5 w-5 text-primary" />
                         </div>
                         <div>
@@ -388,8 +390,8 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-3 mb-4">
                         <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
                           <Award className="h-5 w-5 text-green-500" />
-          </div>
-          <div>
+                        </div>
+                        <div>
                           <h3 className="font-medium text-sm text-muted-foreground">Overall Progress</h3>
                           <p className="text-2xl font-bold">
                             {Math.round(
@@ -400,7 +402,7 @@ export default function DashboardPage() {
                             )}%
                           </p>
                         </div>
-          </div>
+                      </div>
                       <Progress 
                         value={
                           (userData.interviewPrepProgress.technical + 
@@ -432,100 +434,102 @@ export default function DashboardPage() {
                 <>
                   <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/10">
                     <CardContent className="pt-5 pb-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                           <Target className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
+                        </div>
+                        <div>
                           <h3 className="font-medium text-sm text-muted-foreground">Overall Progress</h3>
-                    <p className="text-2xl font-bold">{Math.round(overallProgress)}%</p>
-                  </div>
-                </div>
-                <Progress value={overallProgress} className="h-2" />
-              </CardContent>
-            </Card>
+                          <p className="text-2xl font-bold">{Math.round(overallProgress)}%</p>
+                        </div>
+                      </div>
+                      <Progress value={overallProgress} className="h-2" />
+                    </CardContent>
+                  </Card>
 
                   <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/10">
                     <CardContent className="pt-5 pb-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
                           <Award className="h-5 w-5 text-green-500" />
-                  </div>
-                  <div>
+                        </div>
+                        <div>
                           <h3 className="font-medium text-sm text-muted-foreground">Average Score</h3>
-                    <p className="text-2xl font-bold">{Math.round(averageScore)}%</p>
-                  </div>
-                </div>
-                <Progress value={averageScore} className="h-2 bg-green-500/20" />
-              </CardContent>
-            </Card>
+                          <p className="text-2xl font-bold">{Math.round(averageScore)}%</p>
+                        </div>
+                      </div>
+                      <Progress value={averageScore} className="h-2 bg-green-500/20" />
+                    </CardContent>
+                  </Card>
 
                   <Card className="bg-gradient-to-br from-orange-500/5 to-orange-500/10 border-orange-500/10">
                     <CardContent className="pt-5 pb-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-orange-500/10 flex items-center justify-center">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="h-12 w-12 rounded-full bg-orange-500/10 flex items-center justify-center">
                           <Clock className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <div>
+                        </div>
+                        <div>
                           <h3 className="font-medium text-sm text-muted-foreground">Study Time</h3>
-                    <p className="text-2xl font-bold">47h</p>
-                  </div>
-                </div>
-                <Progress value={70} className="h-2 bg-orange-500/20" />
-              </CardContent>
-            </Card>
+                          <p className="text-2xl font-bold">47h</p>
+                        </div>
+                      </div>
+                      <Progress value={70} className="h-2 bg-orange-500/20" />
+                    </CardContent>
+                  </Card>
                 </>
               )}
-        </div>
+            </div>
 
-            {/* Referral Section */}
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 mb-8 overflow-hidden">
-              <CardContent className="p-0">
-                <div className="flex flex-col md:flex-row">
-                  <div className="p-6 flex-1">
-                    <h2 className="text-xl font-bold text-blue-600 mb-2">Get NSAT Exam FREE with Your Referral!</h2>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Share your referral link with friends joining our NSAT preparation program and get the exam completely FREE (worth ₹900)!
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <a 
-                        href="https://www.newtonschool.co/newton-school-of-technology-nst/apply-referral?utm_source=referral&utm_medium=santoshpuvvada13&utm_campaign=btech-computer-science-portal-referral"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full sm:w-auto"
-                      >
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                          Use Referral Link <ChevronRight className="ml-2 h-4 w-4" />
+            {/* Referral Section - Only show if user is not registered for NSAT */}
+            {!userData.isNsatRegistered && (
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 mb-8 overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="p-6 flex-1">
+                      <h2 className="text-xl font-bold text-blue-600 mb-2">Get NSAT Exam FREE with Your Referral!</h2>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Share your referral link with friends joining our NSAT preparation program and get the exam completely FREE (worth ₹900)!
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <a 
+                          href="https://www.newtonschool.co/newton-school-of-technology-nst/apply-referral?utm_source=referral&utm_medium=santoshpuvvada13&utm_campaign=btech-computer-science-portal-referral"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full sm:w-auto"
+                        >
+                          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                            Use Referral Link <ChevronRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </a>
+                        <Button 
+                          variant="outline" 
+                          className="w-full sm:w-auto" 
+                          onClick={handleCopyLink}
+                        >
+                          {copied ? (
+                            <>
+                              <Check className="mr-2 h-4 w-4" /> Copied!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="mr-2 h-4 w-4" /> Copy Referral Link
+                            </>
+                          )}
                         </Button>
-                      </a>
-                      <Button 
-                        variant="outline" 
-                        className="w-full sm:w-auto" 
-                        onClick={handleCopyLink}
-                      >
-                        {copied ? (
-                          <>
-                            <Check className="mr-2 h-4 w-4" /> Copied!
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="mr-2 h-4 w-4" /> Copy Referral Link
-                          </>
-                        )}
-                      </Button>
+                      </div>
+                    </div>
+                    <div className="hidden md:flex items-center justify-center bg-blue-100 p-6">
+                      <img 
+                        src="/referral-illustration.svg" 
+                        alt="Refer a friend"
+                        className="w-40 h-40 object-contain"
+                        onError={(e) => e.currentTarget.style.display = 'none'}
+                      />
                     </div>
                   </div>
-                  <div className="hidden md:flex items-center justify-center bg-blue-100 p-6">
-                    <img 
-                      src="/referral-illustration.svg" 
-                      alt="Refer a friend"
-                      className="w-40 h-40 object-contain"
-                      onError={(e) => e.currentTarget.style.display = 'none'}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Content Tabs */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -653,71 +657,71 @@ export default function DashboardPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {subjects.slice(0, 4).map((subject, index) => {
-            const subjectProgress = progress?.[subject] || {
-              completedTests: 0,
-              totalScore: 0,
-              completedMaterials: [],
-            };
+                        const subjectProgress = progress?.[subject] || {
+                          completedTests: 0,
+                          totalScore: 0,
+                          completedMaterials: [],
+                        };
 
-            const Icon = icons[subject];
-            const encodedSubject = encodeURIComponent(subject);
+                        const Icon = icons[subject];
+                        const encodedSubject = encodeURIComponent(subject);
 
-            return (
+                        return (
                           <Link href={`/subjects/${encodedSubject}`} key={index}>
                             <Card className="hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer h-full">
                               <CardContent className="p-5">
                                 <div className="flex items-start gap-4 mb-4">
                                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <Icon className="h-5 w-5 text-primary" />
-                          </div>
+                                  </div>
                                   <div className="flex-1 min-w-0">
                                     <h3 className="font-semibold mb-1 truncate">{subject}</h3>
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                       <Award className="h-3 w-3" />
-                              <span>{subjectProgress.completedTests} tests completed</span>
-                            </div>
-                          </div>
+                                      <span>{subjectProgress.completedTests} tests completed</span>
+                                    </div>
+                                  </div>
                                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                      </div>
+                                </div>
 
                                 <div className="space-y-2">
-                        <div>
+                                  <div>
                                     <div className="flex justify-between mb-1 text-xs">
                                       <span className="text-muted-foreground">Progress</span>
-                            <span className="font-medium">
+                                      <span className="font-medium">
                                         {subjectProgress.completedMaterials.length}/10
-                            </span>
-                          </div>
-                          <Progress
-                            value={subjectProgress.completedMaterials.length * 10}
+                                      </span>
+                                    </div>
+                                    <Progress
+                                      value={subjectProgress.completedMaterials.length * 10}
                                       className="h-1.5"
-                          />
-                        </div>
+                                    />
+                                  </div>
 
-                        <div className="flex justify-between items-center">
+                                  <div className="flex justify-between items-center">
                                     <span className="text-xs text-muted-foreground">
                                       Average Score
                                     </span>
-                          <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2">
                                       <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                              subjectProgress.completedTests
-                                ? 'bg-green-500/10 text-green-500'
-                                : 'bg-muted text-muted-foreground'
-                            }`}>
-                              {subjectProgress.completedTests
-                                ? `${Math.round(
-                                    subjectProgress.totalScore / subjectProgress.completedTests
-                                  )}%`
-                                : 'No tests'}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-            );
-          })}
+                                        subjectProgress.completedTests
+                                          ? 'bg-green-500/10 text-green-500'
+                                          : 'bg-muted text-muted-foreground'
+                                      }`}>
+                                        {subjectProgress.completedTests
+                                          ? `${Math.round(
+                                              subjectProgress.totalScore / subjectProgress.completedTests
+                                            )}%`
+                                          : 'No tests'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -827,28 +831,6 @@ export default function DashboardPage() {
                 </>
               )}
             </div>
-
-            <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mt-8 mb-8">
-                  <CardContent className="p-5">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                      <div className="flex items-start gap-4">
-                        <div className="h-12 w-12 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                          <Target className="h-6 w-6 text-violet-500" />
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-semibold mb-1">Ready for a Mock Interview?</h3>
-                          <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback.</p>
-                        </div>
-                      </div>
-                      <Link href="/mock-interviews">
-                        <Button className="bg-violet-600 hover:bg-violet-700 text-white w-full md:w-auto">
-                          Schedule Interview
-                          <ChevronRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
 
             {/* Certificates and Mock Tests */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -1000,13 +982,35 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Checkout Section */}
-        
+            {/* Checkout Section - Only show if user is not registered for NSAT */}
+            {!userData.isNsatRegistered && (
+              <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-500/20">
+                <CardContent className="p-5">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <CreditCard className="h-6 w-6 text-blue-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-1">Ready to Register for NSAT?</h3>
+                        <p className="text-sm text-muted-foreground">Secure your spot for the upcoming NSAT exam dates and get access to premium features.</p>
+                      </div>
+                    </div>
+                    <Link href="/checkout">
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-auto">
+                        Register Now
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Action Cards */}
             {userData.needsInterviewPrep ? (
               <>
-                <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mt-8">
+                <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mb-8">
                   <CardContent className="p-5">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
@@ -1052,6 +1056,28 @@ export default function DashboardPage() {
               </>
             ) : (
               <>
+                <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mb-8">
+                  <CardContent className="p-5">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="h-12 w-12 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                          <Target className="h-6 w-6 text-violet-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1">Ready for a Mock Interview?</h3>
+                          <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback.</p>
+                        </div>
+                      </div>
+                      <Link href="/mock-interviews">
+                        <Button className="bg-violet-600 hover:bg-violet-700 text-white w-full md:w-auto">
+                          Schedule Interview
+                          <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 <Card className="bg-gradient-to-br from-amber-500/5 to-amber-500/10 border-amber-500/20">
                   <CardContent className="p-5">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">

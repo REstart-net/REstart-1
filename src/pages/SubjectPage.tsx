@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, GraduationCap, BookOpen, BrainCircuit, Clock, Award, Download, ArrowLeft, Check, ChevronRight, Target, Users } from "lucide-react";
+import { FileText, GraduationCap, BookOpen, BrainCircuit, Clock, Award, Download, ArrowLeft, Check, ChevronRight, Target, Users, BookMarked } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
 import { subjects, type Subject } from "@/shared/schema";
 import { motion } from "framer-motion";
@@ -17,47 +17,92 @@ const subjectIcons = {
 
 const mockTests = {
   "Basic Mathematics": [
-    { id: "bm1", title: "Numbers and Operations", duration: 30, questions: 20, difficulty: "Easy" },
-    { id: "bm2", title: "Algebra Basics", duration: 45, questions: 25, difficulty: "Medium" },
-    { id: "bm3", title: "Geometry Fundamentals", duration: 40, questions: 22, difficulty: "Hard" },
+    { id: "bm1", title: "HCF & LCM | Divisibility", duration: 30, questions: 20, difficulty: "Easy" },
+    { id: "bm2", title: "Ratios, Averages & Percentages", duration: 45, questions: 25, difficulty: "Medium" },
+    { id: "bm3", title: "Polynomials", duration: 40, questions: 22, difficulty: "Medium" },
+    { id: "bm4", title: "Inequalities & Linear Equations", duration: 35, questions: 20, difficulty: "Hard" },
+    { id: "bm5", title: "Speed, Profit & Loss", duration: 30, questions: 18, difficulty: "Medium" },
   ],
   "Advanced Mathematics": [
-    { id: "am1", title: "Calculus Introduction", duration: 60, questions: 30, difficulty: "Medium" },
-    { id: "am2", title: "Advanced Algebra", duration: 45, questions: 25, difficulty: "Hard" },
-    { id: "am3", title: "Trigonometry", duration: 50, questions: 28, difficulty: "Hard" },
+    { id: "am1", title: "Sets & PnC", duration: 60, questions: 30, difficulty: "Medium" },
+    { id: "am2", title: "Functions", duration: 45, questions: 25, difficulty: "Hard" },
+    { id: "am3", title: "Sequence and Series", duration: 50, questions: 28, difficulty: "Hard" },
+    { id: "am4", title: "Calculus", duration: 60, questions: 30, difficulty: "Hard" },
+    { id: "am5", title: "Probability & Statistics", duration: 55, questions: 25, difficulty: "Medium" },
   ],
   "English": [
-    { id: "en1", title: "Reading Comprehension", duration: 45, questions: 25, difficulty: "Medium" },
-    { id: "en2", title: "Grammar and Usage", duration: 30, questions: 20, difficulty: "Easy" },
-    { id: "en3", title: "Vocabulary", duration: 35, questions: 22, difficulty: "Hard" },
+    { id: "en1", title: "Summary & Tone of Passage", duration: 45, questions: 25, difficulty: "Medium" },
+    { id: "en2", title: "Cause and Effect Relationships", duration: 30, questions: 20, difficulty: "Easy" },
+    { id: "en3", title: "High Order Inferences from Texts", duration: 35, questions: 22, difficulty: "Hard" },
   ],
   "Logical Reasoning": [
-    { id: "lr1", title: "Pattern Recognition", duration: 40, questions: 25, difficulty: "Medium" },
-    { id: "lr2", title: "Analytical Reasoning", duration: 45, questions: 28, difficulty: "Hard" },
-    { id: "lr3", title: "Critical Thinking", duration: 50, questions: 30, difficulty: "Hard" },
+    { id: "lr1", title: "Tables and Graphs", duration: 40, questions: 25, difficulty: "Medium" },
+    { id: "lr2", title: "Venn Diagrams and Scatter Plots", duration: 45, questions: 28, difficulty: "Hard" },
+    { id: "lr3", title: "Arrangements and Navigation", duration: 50, questions: 30, difficulty: "Hard" },
+    { id: "lr4", title: "Family Relations", duration: 40, questions: 25, difficulty: "Medium" },
+    { id: "lr5", title: "Encryption and Instructions", duration: 45, questions: 28, difficulty: "Hard" },
   ],
+};
+
+const fullTests = {
+  "Basic Mathematics": { 
+    id: "bm-full", 
+    title: "Complete Mathematics Basic Test", 
+    duration: 60, 
+    questions: 30, 
+    difficulty: "Mixed",
+    description: "Comprehensive test covering all chapters in Basic Mathematics"
+  },
+  "Advanced Mathematics": { 
+    id: "am-full", 
+    title: "Complete Mathematics Advanced Test", 
+    duration: 60, 
+    questions: 30, 
+    difficulty: "Mixed",
+    description: "Comprehensive test covering all chapters in Advanced Mathematics"
+  },
+  "English": { 
+    id: "en-full", 
+    title: "Complete English Proficiency Test", 
+    duration: 45, 
+    questions: 30, 
+    difficulty: "Mixed",
+    description: "Comprehensive test covering all aspects of English comprehension"
+  },
+  "Logical Reasoning": { 
+    id: "lr-full", 
+    title: "Complete Logical Reasoning Test", 
+    duration: 60, 
+    questions: 30, 
+    difficulty: "Mixed",
+    description: "Comprehensive test covering all major logical reasoning concepts"
+  },
 };
 
 const studyMaterials = {
   "Basic Mathematics": [
-    { id: "bm-pdf1", title: "Numbers and Operations Guide", size: "2.4 MB", pages: 45, type: "PDF" },
-    { id: "bm-pdf2", title: "Algebra Basics Handbook", size: "3.1 MB", pages: 60, type: "PDF" },
-    { id: "bm-pdf3", title: "Geometry Fundamentals Notes", size: "2.8 MB", pages: 52, type: "PDF" },
+    { id: "bm-pdf1", title: "HCF & LCM | Divisibility Guide", size: "2.4 MB", pages: 45, type: "PDF" },
+    { id: "bm-pdf2", title: "Ratios & Percentages Handbook", size: "3.1 MB", pages: 60, type: "PDF" },
+    { id: "bm-pdf3", title: "Polynomials & Equations", size: "2.8 MB", pages: 52, type: "PDF" },
+    { id: "bm-pdf4", title: "Profit, Loss & Interest", size: "2.5 MB", pages: 48, type: "PDF" },
   ],
   "Advanced Mathematics": [
-    { id: "am-pdf1", title: "Calculus Comprehensive Guide", size: "4.2 MB", pages: 75, type: "PDF" },
-    { id: "am-pdf2", title: "Advanced Algebra Workbook", size: "3.8 MB", pages: 68, type: "PDF" },
-    { id: "am-pdf3", title: "Trigonometry Practice Book", size: "3.5 MB", pages: 62, type: "PDF" },
+    { id: "am-pdf1", title: "Sets & PnC Comprehensive Guide", size: "4.2 MB", pages: 75, type: "PDF" },
+    { id: "am-pdf2", title: "Functions & Series Workbook", size: "3.8 MB", pages: 68, type: "PDF" },
+    { id: "am-pdf3", title: "Calculus Reference Manual", size: "3.5 MB", pages: 62, type: "PDF" },
+    { id: "am-pdf4", title: "Probability & Statistics Guide", size: "3.7 MB", pages: 70, type: "PDF" },
   ],
   "English": [
-    { id: "en-pdf1", title: "Reading Comprehension Strategies", size: "2.9 MB", pages: 55, type: "PDF" },
-    { id: "en-pdf2", title: "Grammar and Usage Manual", size: "2.6 MB", pages: 48, type: "PDF" },
-    { id: "en-pdf3", title: "Vocabulary Building Guide", size: "2.2 MB", pages: 42, type: "PDF" },
+    { id: "en-pdf1", title: "Summary & Tone of Passage Guide", size: "2.9 MB", pages: 55, type: "PDF" },
+    { id: "en-pdf2", title: "Cause and Effect Relationships Manual", size: "2.6 MB", pages: 48, type: "PDF" },
+    { id: "en-pdf3", title: "High Order Inferences Guide", size: "2.2 MB", pages: 42, type: "PDF" },
   ],
   "Logical Reasoning": [
-    { id: "lr-pdf1", title: "Pattern Recognition Techniques", size: "3.2 MB", pages: 58, type: "PDF" },
-    { id: "lr-pdf2", title: "Analytical Reasoning Guide", size: "3.4 MB", pages: 62, type: "PDF" },
-    { id: "lr-pdf3", title: "Critical Thinking Handbook", size: "3.6 MB", pages: 65, type: "PDF" },
+    { id: "lr-pdf1", title: "Tables and Graphs Guide", size: "3.2 MB", pages: 58, type: "PDF" },
+    { id: "lr-pdf2", title: "Venn Diagrams and Scatter Plots", size: "3.4 MB", pages: 62, type: "PDF" },
+    { id: "lr-pdf3", title: "Arrangements and Navigation", size: "3.6 MB", pages: 65, type: "PDF" },
+    { id: "lr-pdf4", title: "Family Relations and Encryption", size: "3.5 MB", pages: 60, type: "PDF" },
+    { id: "lr-pdf5", title: "Instruction Sets Guide", size: "3.3 MB", pages: 55, type: "PDF" },
   ],
 };
 
@@ -69,6 +114,8 @@ const getDifficultyColor = (difficulty: string) => {
       return 'text-orange-500 bg-orange-500/10';
     case 'hard':
       return 'text-red-500 bg-red-500/10';
+    case 'mixed':
+      return 'text-purple-500 bg-purple-500/10';
     default:
       return 'text-muted-foreground bg-muted';
   }
@@ -93,6 +140,10 @@ export default function SubjectPage() {
     window.location.href = `/subjects/${subject}/test`;
   };
 
+  const handleStartFullTest = async () => {
+    window.location.href = `/subjects/${subject}/full-test`;
+  };
+
   const handleDownloadMaterial = async (materialId: string) => {
     await updateProgress(subject as Subject, {
       completedMaterials: [...subjectProgress.completedMaterials, materialId],
@@ -112,7 +163,7 @@ export default function SubjectPage() {
               <Users className="h-4 w-4" />
               Study Group
             </Button>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={handleStartFullTest}>
               <Target className="h-4 w-4" />
               Take Full Test
             </Button>
@@ -192,6 +243,55 @@ export default function SubjectPage() {
                   : 0}
                 className="h-2 bg-orange-500/20"
               />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Full Test Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-8"
+        >
+          <Card className="bg-gradient-to-r from-primary/20 to-primary/5 hover:shadow-lg transition-all">
+            <CardContent className="p-6">
+              <div className="flex items-start md:items-center justify-between flex-col md:flex-row gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="h-14 w-14 rounded-xl bg-primary/20 flex items-center justify-center">
+                    <BookMarked className="h-7 w-7 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">
+                      {fullTests[subject as Subject].title}
+                    </h3>
+                    <p className="text-muted-foreground mb-2">
+                      {fullTests[subject as Subject].description}
+                    </p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {fullTests[subject as Subject].duration} mins
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <FileText className="h-4 w-4" />
+                        {fullTests[subject as Subject].questions} questions
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(fullTests[subject as Subject].difficulty)}`}>
+                        {fullTests[subject as Subject].difficulty}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <Button 
+                  size="lg" 
+                  className="whitespace-nowrap"
+                  onClick={handleStartFullTest}
+                >
+                  Start Full Test
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

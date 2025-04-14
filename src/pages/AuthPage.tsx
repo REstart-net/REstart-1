@@ -10,24 +10,38 @@ import { Progress } from "@/components/ui/progress";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser } from "@/shared/schema";
-import { Loader2, Check, X, Eye, EyeOff } from "lucide-react";
+import { Loader2, Check, X, Eye, EyeOff, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { verifyNsatRegistration } from "@/lib/api";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user, loginMutation, registerMutation, resetPasswordMutation } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
-  const [examAttempt, setExamAttempt] = useState<number | null>(null);
-
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  
   const loginForm = useForm<Pick<InsertUser, "email" | "password">>({
     resolver: zodResolver(insertUserSchema.pick({ email: true, password: true })),
     defaultValues: { email: "", password: "" }
   });
 
-  const registerForm = useForm<InsertUser & { examAttempt?: number }>({
+  const forgotPasswordForm = useForm<Pick<InsertUser, "email">>({
+    resolver: zodResolver(insertUserSchema.pick({ email: true })),
+    defaultValues: { email: "" }
+  });
+
+  const registerForm = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
       email: "",
@@ -36,9 +50,20 @@ export default function AuthPage() {
       phoneNumber: "",
       passingYear: new Date().getFullYear(),
       isNsatRegistered: false,
-      examAttempt: null
+      needsInterviewPrep: false
     }
   });
+
+  const handleForgotPassword = async (data: { email: string }) => {
+    try {
+      await resetPasswordMutation.mutateAsync(data.email);
+      toast.success("Password reset email sent! Please check your inbox.");
+      setShowForgotPassword(false);
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      toast.error("Failed to send reset email. Please try again.");
+    }
+  };
 
   if (user) {
     return <Redirect to="/dashboard" />;
@@ -63,9 +88,30 @@ export default function AuthPage() {
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 25 }, (_, i) => currentYear - i);
 
+  const handleNsatVerification = async (email: string) => {
+    try {
+      setIsVerifying(true);
+      const bearerToken = process.env.VITE_NSAT_BEARER_TOKEN;
+      if (!bearerToken) {
+        toast.error("NSAT verification token not configured");
+        return;
+      }
+
+      await verifyNsatRegistration(email, bearerToken);
+      registerForm.setValue("isNsatRegistered", true);
+      toast.success("NSAT registration verified successfully!");
+    } catch (error) {
+      console.error("NSAT verification failed:", error);
+      toast.error("Failed to verify NSAT registration");
+      registerForm.setValue("isNsatRegistered", false);
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen grid md:grid-cols-2">
-      <div className="flex items-center justify-center p-8">
+    <div className="min-h-screen grid md:grid-cols-5 bg-muted/40 backdrop-blur">
+      <div className="md:col-span-3 flex items-center justify-center p-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -144,6 +190,16 @@ export default function AuthPage() {
                                 </button>
                               </div>
                             </FormControl>
+                            <div className="flex justify-end">
+                              <Button 
+                                type="button" 
+                                variant="link" 
+                                className="px-0 py-0 h-auto text-xs"
+                                onClick={() => setShowForgotPassword(true)}
+                              >
+                                Forgot password?
+                              </Button>
+                            </div>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -195,22 +251,20 @@ export default function AuthPage() {
                                   placeholder="Enter your email" 
                                   {...field} 
                                 />
-                                <AnimatePresence>
-                                  {field.value && (
-                                    <motion.span
-                                      initial={{ opacity: 0, scale: 0.5 }}
-                                      animate={{ opacity: 1, scale: 1 }}
-                                      exit={{ opacity: 0, scale: 0.5 }}
-                                      className="absolute right-3 top-1/2 -translate-y-1/2"
-                                    >
-                                      {registerForm.formState.errors.email ? (
-                                        <X className="h-4 w-4 text-red-500" />
-                                      ) : (
-                                        <Check className="h-4 w-4 text-green-500" />
-                                      )}
-                                    </motion.span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                                  onClick={() => handleNsatVerification(field.value)}
+                                  disabled={isVerifying || !field.value}
+                                >
+                                  {isVerifying ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    "Verify NSAT"
                                   )}
-                                </AnimatePresence>
+                                </Button>
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -336,10 +390,6 @@ export default function AuthPage() {
                               <RadioGroup
                                 onValueChange={(value) => {
                                   field.onChange(value === "true");
-                                  if (value !== "true") {
-                                    setExamAttempt(null);
-                                    registerForm.setValue("examAttempt", null);
-                                  }
                                 }}
                                 defaultValue={field.value.toString()}
                                 className="flex flex-col space-y-1"
@@ -401,47 +451,6 @@ export default function AuthPage() {
                           </FormItem>
                         )}
                       />
-
-                      {registerForm.watch("isNsatRegistered") && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="space-y-3 pl-6"
-                        >
-                          <FormLabel>Which attempt are you preparing for?</FormLabel>
-                          <div className="space-y-2">
-                            {[1, 2, 3].map((attempt) => (
-                              <div key={attempt} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={`attempt-${attempt}`}
-                                  checked={examAttempt === attempt}
-                                  onCheckedChange={(checked) => {
-                                    if (checked) {
-                                      setExamAttempt(attempt);
-                                      registerForm.setValue("examAttempt", attempt);
-                                    } else if (examAttempt === attempt) {
-                                      setExamAttempt(null);
-                                      registerForm.setValue("examAttempt", null);
-                                    }
-                                  }}
-                                />
-                                <Label
-                                  htmlFor={`attempt-${attempt}`}
-                                  className="text-sm font-normal"
-                                >
-                                  Attempt {attempt}
-                                </Label>
-                              </div>
-                            ))}
-                          </div>
-                          {registerForm.formState.errors.examAttempt && (
-                            <p className="text-sm font-medium text-destructive">
-                              {registerForm.formState.errors.examAttempt.message}
-                            </p>
-                          )}
-                        </motion.div>
-                      )}
 
                       <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
                         {registerMutation.isPending ? (
@@ -506,6 +515,64 @@ export default function AuthPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Enter your email address below and we'll send you a link to reset your password.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...forgotPasswordForm}>
+            <form onSubmit={forgotPasswordForm.handleSubmit(handleForgotPassword)} className="space-y-4">
+              <FormField
+                control={forgotPasswordForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-2">
+                        <Input 
+                          type="email"
+                          placeholder="Enter your email" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setShowForgotPassword(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="gap-2"
+                  disabled={resetPasswordMutation.isPending}
+                >
+                  {resetPasswordMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Mail className="h-4 w-4" />
+                  )}
+                  Send Reset Link
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

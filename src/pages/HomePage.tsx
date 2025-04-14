@@ -57,11 +57,6 @@ const container = {
   },
 };
 
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-};
-
 const float = {
   y: [-10, 10],
   transition: {
@@ -191,73 +186,6 @@ const TiltCard = ({ children, className }: { children: React.ReactNode, classNam
           <div className="absolute inset-0 bg-primary/10 rounded-lg pointer-events-none" />
         )}
       </div>
-    </motion.div>
-  );
-};
-
-// Animated counter component
-const AnimatedCounter = ({ value, label, icon: Icon }: { value: number | string, label: string, icon: React.ElementType }) => {
-  const [count, setCount] = useState(0);
-  const counterRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          let startTime: number;
-          const animationDuration = 2000; // 2 seconds
-          
-          const step = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / animationDuration, 1);
-            setCount(Math.floor(progress * (typeof value === 'number' ? value : 0)));
-            
-            if (progress < 1) {
-              window.requestAnimationFrame(step);
-            }
-          };
-          
-          window.requestAnimationFrame(step);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    
-    if (counterRef.current) {
-      observer.observe(counterRef.current);
-    }
-    
-    return () => observer.disconnect();
-  }, [value]);
-  
-  return (
-    <motion.div
-      ref={counterRef}
-      variants={item}
-      className="flex flex-col items-center p-4 rounded-lg bg-primary/5 backdrop-blur-sm m-5"
-      whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-    >
-      <Icon className="h-6 w-6 text-primary mb-2" />
-      <div className="relative">
-        <span className="text-2xl font-bold">
-          {typeof value === 'string' ? value : count}
-          {typeof value === 'number' && value > 100 && "+"}
-        </span>
-        <motion.div
-          className="absolute -top-1 -right-2 h-2 w-2 rounded-full bg-primary"
-          animate={{
-            scale: [1, 1.5, 1],
-            opacity: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
-      <span className="text-sm text-muted-foreground">{label}</span>
     </motion.div>
   );
 };
@@ -588,9 +516,6 @@ export default function HomePage() {
   const mainRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
-  const [scrollIndicator, setScrollIndicator] = useState(0);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
   
   // Track scroll progress
   useEffect(() => {
@@ -638,31 +563,6 @@ export default function HomePage() {
         { sender: 'bot', message: responses[Math.floor(Math.random() * responses.length)] }
       ]);
     }, 1000);
-  };
-
-  // Add this effect to track scroll for the scroll indicator
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.body.offsetHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
-      setScrollIndicator(scrollPercent);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  
-  // Add this function to handle video playback
-  const toggleVideo = () => {
-    if (videoRef.current) {
-      if (isVideoPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsVideoPlaying(!isVideoPlaying);
-    }
   };
   
   // Add this function to show a notification
@@ -1714,21 +1614,21 @@ export default function HomePage() {
                       name: "Chiranjeev Agrawal",
                       role: "CEO",
                       bio: "Visionary leader with extensive experience in education technology and NSAT preparation.",
-                      image: "https://imagekit.io/tools/asset-public-link?detail=%7B%22name%22%3A%22Screenshot%202025-04-13%20at%207.38.38%E2%80%AFPM.png%22%2C%22type%22%3A%22image%2Fpng%22%2C%22signedurl_expire%22%3A%222028-04-12T14%3A08%3A43.713Z%22%2C%22signedUrl%22%3A%22https%3A%2F%2Fmedia-hosting.imagekit.io%2Fda14168ed1ca44ca%2FScreenshot%25202025-04-13%2520at%25207.38.38%25E2%2580%25AFPM.png%3FExpires%3D1839161324%26Key-Pair-Id%3DK2ZIVPTIP2VGHC%26Signature%3Dw4r9q8E8~FxRGFZiEv-PJphyisOKomkdS7Iu-4p0QN05JW17w6ZlM-f3f-EBJ9co6DNgp0Sf4OBAcDhj0CIt8jQw3BIfM8dLWilcGLn-QN~Zdim9tSc5w57lLDvQymZ1h9xfKR2Zx0xP1RJu~s5KAiHTLM0kWd0Gi469Tcfb9SO3nnxwOObqoZD~eFUQ02filsFGhhJlr~68cRfw0m1XyZK5JhouHsnLJnv2F~hevconAbMv1CP9BUCsCnQoGET8LerMqCFe5Dj9uNLKOVZ7WOb3LkcM63ItxWZK~rvX3C1vkjHCnspHdLTRWfFaLU-LYw5jTL036PH2Fa0BtPLbHg__%22%7D",
+                      image: "/ceo.png",
                       achievements: ["Education Innovator", "Tech Entrepreneur",]
                     },
                     {
                       name: "Sahil Khan",
                       role: "Managing Director",
                       bio: "Strategic leader focused on expanding educational access and improving student outcomes.",
-                      image: "https://imagekit.io/tools/asset-public-link?detail=%7B%22name%22%3A%22Screenshot%202025-04-13%20at%207.39.01%E2%80%AFPM.png%22%2C%22type%22%3A%22image%2Fpng%22%2C%22signedurl_expire%22%3A%222028-04-12T14%3A09%3A08.196Z%22%2C%22signedUrl%22%3A%22https%3A%2F%2Fmedia-hosting.imagekit.io%2Fadd0c5e8c02c46fa%2FScreenshot%25202025-04-13%2520at%25207.39.01%25E2%2580%25AFPM.png%3FExpires%3D1839161348%26Key-Pair-Id%3DK2ZIVPTIP2VGHC%26Signature%3DFpcSThqmzHli-v5O1ZL7OW4eQkw6~1A-bMMpNoHQVGcitsKckc3ge2vegRsRNAczOaW0u1lKuF7gr62C6-8Kbc17m6FvqtHxhG~WbtaPso2WcoJaoaYPWDjMg3tY8wqkPBEY1NQ4ws-ntkp-cDnkQmo6Ubl3M678Swsi10cu99X8x44xqM3JfpF-QSpM1fTB7aRbB18cH0fj6iIhuGkvReoG7icveG77EA0pvRR1T7JEA8hZA~AmKf3VaWLmPh-AI3oPnVZKCCqQqQ6QI12a9YVpS-ckXgbiwtfFXyhvNHNbGPNBUocPj2iXDdRNS49Wo9o6thw2Lk6Id0aeB-YKAQ__%22%7D",
+                      image: "/md.png",
                       achievements: ["Education Management", "Operational Excellence"]
                     },
                     {
                       name: "Aditya Prakash",
                       role: "CTO",
                       bio: "Technology expert specializing in educational platforms and adaptive learning systems.",
-                      image: "https://imagekit.io/tools/asset-public-link?detail=%7B%22name%22%3A%22Screenshot%202025-04-13%20at%207.28.01%E2%80%AFPM.png%22%2C%22type%22%3A%22image%2Fpng%22%2C%22signedurl_expire%22%3A%222028-04-12T13%3A59%3A09.052Z%22%2C%22signedUrl%22%3A%22https%3A%2F%2Fmedia-hosting.imagekit.io%2F9ddbac2cd7e74591%2FScreenshot%25202025-04-13%2520at%25207.28.01%25E2%2580%25AFPM.png%3FExpires%3D1839160749%26Key-Pair-Id%3DK2ZIVPTIP2VGHC%26Signature%3D2JF4UtI0dxRHKfAj~F7IbwfNbBPEwBbp5qddez2TVKD-Puj6oztqsZg5m41HLa0HYK5wRwlJPQWl7LqQ6sCVfDdWmCTLz5vnr12FU0HTJxvL1sS8y2Z~gQmLiKTCmPkjXsZ-DO59yYpfhDHHTdjBIled~NfgtM67vlRGSE8ia22GfphUsYnXtOXEPTQL9cXPTXVmTe9EE6bdTWvlTIq0Fpu6nqh1w5vemMJGtgoepnu04eFbN9QYHMw~EHCit1rYTFQ-tzXTmqHSxfteGXLoTLc0BdWkyzIeG99ceOvJdeytit93XEj1brt9KkRn7vfl3ejayv7WJwD~7sJilCiKKA__%22%7D",
+                      image: "/cto.png",
                       achievements: ["Full-Stack Developer", "AI Learning Systems", "EdTech Innovation"]
                     }
                   ].map((founder, index) => (
@@ -1853,10 +1753,12 @@ export default function HomePage() {
                   className="mt-8 text-center"
                 >
                   <p className="text-muted-foreground mb-4">Still have questions? Contact our support team</p>
-                  <Button className="bg-primary/90 hover:bg-primary">
-                    Contact Support
-                    <MessageSquare className="ml-2 h-4 w-4" />
-                  </Button>
+                  <Link href="/support">
+                    <Button className="bg-primary/90 hover:bg-primary">
+                      Contact Support
+                      <MessageSquare className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </motion.div>
               </div>
             </div>
