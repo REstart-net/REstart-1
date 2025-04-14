@@ -235,7 +235,7 @@ const AnimatedCounter = ({ value, label, icon: Icon }: { value: number | string,
     <motion.div
       ref={counterRef}
       variants={item}
-      className="flex flex-col items-center p-4 rounded-lg bg-primary/5 backdrop-blur-sm"
+      className="flex flex-col items-center p-4 rounded-lg bg-primary/5 backdrop-blur-sm m-5"
       whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
     >
       <Icon className="h-6 w-6 text-primary mb-2" />
@@ -722,7 +722,7 @@ export default function HomePage() {
               {user ? (
                 <Link href="/dashboard">
                   <Button 
-                    className="w-full sm:w-auto bg-primary hover:bg-primary/90 relative overflow-hidden group transition-all duration-300 ease-out hover:scale-105 shadow-lg hover:shadow-primary/25"
+                    className="w-full sm:w-auto bg-customBlue hover:bg-customBlue/90 relative overflow-hidden group transition-all duration-300 ease-out hover:scale-105 shadow-lg hover:shadow-customBlue/25"
                     size="lg"
                   >
                     <motion.div
@@ -847,7 +847,7 @@ export default function HomePage() {
                   
                   <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                     <span className="text-foreground">Master the </span>
-                    <span className="text-primary relative">
+                    <span className="text-primary relative text-customBlue">
                       NSAT
                       <motion.div
                         className="absolute -bottom-2 left-0 h-2 bg-primary/30 w-full rounded-full"
@@ -864,7 +864,7 @@ export default function HomePage() {
                   </p>
                   
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-medium">
+                    <Button size="lg" className="bg-customBlue hover:bg-customBlue/90 text-white font-medium">
                       Start Free Trial
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -1872,7 +1872,7 @@ export default function HomePage() {
         >
           <Button
             onClick={() => setActiveChatbot(!activeChatbot)}
-            className="w-14 h-14 rounded-full bg-primary shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all"
+            className="w-14 h-14 rounded-full bg-customBlue shadow-lg hover:shadow-xl hover:bg-customBlue/90 transition-all"
           >
             <MessageSquare className="h-6 w-6" />
           </Button>
@@ -1914,7 +1914,7 @@ export default function HomePage() {
                       className={`max-w-[80%] p-3 rounded-lg ${
                         msg.sender === 'bot'
                           ? 'bg-muted text-foreground'
-                          : 'bg-primary text-primary-foreground'
+                          : 'bg-customBlue text-primary-foreground'
                       }`}
                     >
                       {msg.message}
@@ -1935,7 +1935,7 @@ export default function HomePage() {
                   />
                   <Button
                     onClick={handleSendMessage}
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-customBlue hover:bg-customBlue/90"
                     size="icon"
                   >
                     <ArrowRight className="h-4 w-4" />

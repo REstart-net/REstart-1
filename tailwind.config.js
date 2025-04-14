@@ -3,6 +3,7 @@ export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
+
     container: {
       center: true,
       padding: "2rem",
@@ -18,8 +19,8 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#0085FF",
+          foreground: "#FFFFFF",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -44,6 +45,11 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        customBlue: {
+          DEFAULT: "#0085FF", // Add your custom color here
+          light: "#3B82F6",   // Optional: Add lighter shade
+          dark: "#1E3A8A",    // Optional: Add darker shade
         },
       },
       borderRadius: {

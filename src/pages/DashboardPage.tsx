@@ -828,6 +828,28 @@ export default function DashboardPage() {
               )}
             </div>
 
+            <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mt-8 mb-8">
+                  <CardContent className="p-5">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="h-12 w-12 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                          <Target className="h-6 w-6 text-violet-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1">Ready for a Mock Interview?</h3>
+                          <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback.</p>
+                        </div>
+                      </div>
+                      <Link href="/mock-interviews">
+                        <Button className="bg-violet-600 hover:bg-violet-700 text-white w-full md:w-auto">
+                          Schedule Interview
+                          <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+
             {/* Certificates and Mock Tests */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Interview Resources */}
@@ -979,32 +1001,12 @@ export default function DashboardPage() {
             </Card>
 
             {/* Checkout Section */}
-            <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-500/20">
-              <CardContent className="p-5">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                      <CreditCard className="h-6 w-6 text-blue-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1">Ready to Register for NSAT?</h3>
-                      <p className="text-sm text-muted-foreground">Secure your spot for the upcoming NSAT exam dates and get access to premium features.</p>
-                    </div>
-                  </div>
-                  <Link href="/checkout">
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-auto">
-                      Register Now
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+        
 
             {/* Action Cards */}
             {userData.needsInterviewPrep ? (
               <>
-                <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mb-8">
+                <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mt-8">
                   <CardContent className="p-5">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
@@ -1050,28 +1052,6 @@ export default function DashboardPage() {
               </>
             ) : (
               <>
-                <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mb-8">
-                  <CardContent className="p-5">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                      <div className="flex items-start gap-4">
-                        <div className="h-12 w-12 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                          <Target className="h-6 w-6 text-violet-500" />
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-semibold mb-1">Ready for a Mock Interview?</h3>
-                          <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback.</p>
-                        </div>
-                      </div>
-                      <Link href="/mock-interviews">
-                        <Button className="bg-violet-600 hover:bg-violet-700 text-white w-full md:w-auto">
-                          Schedule Interview
-                          <ChevronRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-
                 <Card className="bg-gradient-to-br from-amber-500/5 to-amber-500/10 border-amber-500/20">
                   <CardContent className="p-5">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
