@@ -1276,7 +1276,7 @@ export default function HomePage() {
                 {/* Add an interactive map with campus locations */}
                 <div className="mb-16 relative h-[400px] rounded-xl overflow-hidden shadow-xl">
                 <iframe 
-                    src = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3490.1523393397647!2d77.0874287758143!3d28.982856468085476!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390db1e3451de103%3A0xf3b49ff0baac646f!2sRishihood%20University!5e0!3m2!1sen!2sin!4v1744658435505!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                    src = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3490.1523393397647!2d77.0874287758143!3d28.982856468085476!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390db1e3451de103%3A0xf3b49ff0baac646f!2sRishihood%20University!5e0!3m2!1sen!2sin!4v1744658435505!5m2!1sen!2sin"
                     width="100%" 
                     height="100%" 
                     style={{ border: 0 }} 
