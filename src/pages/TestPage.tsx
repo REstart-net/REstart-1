@@ -248,7 +248,7 @@ export default function TestPage() {
         </Card>
         
         {/* Upgrade Package Section */}
-        <div className="max-w-4xl w-full">
+        <div className="max-w-6xl w-full center mx-auto px-4">
           <h2 className="text-2xl font-bold text-center mb-6">Unlock Unlimited Test Attempts</h2>
           <p className="text-center text-muted-foreground mb-8">
             Upgrade your package to take unlimited tests and maximize your preparation!
@@ -264,8 +264,8 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Essential NSAT preparation</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹399</p>
-                  <p className="text-sm text-muted-foreground">or ₹149/month</p>
+                  <p className="text-3xl font-bold">₹200</p>
+
                 </div>
               </CardHeader>
               <CardContent>
@@ -296,7 +296,7 @@ export default function TestPage() {
             </Card>
 
             {/* Premium Package */}
-            <Card className="border-primary relative shadow-lg">
+            <Card className="border-primary relative shadow-lg mr-8">
               <div className="absolute -top-3 left-0 right-0 flex justify-center">
                 <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
                   MOST POPULAR
@@ -309,8 +309,8 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Complete NSAT success kit</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹899</p>
-                  <p className="text-sm text-muted-foreground">or ₹299/month</p>
+                  <p className="text-3xl font-bold">₹500</p>
+
                 </div>
               </CardHeader>
               <CardContent>
@@ -345,48 +345,7 @@ export default function TestPage() {
             </Card>
 
             {/* Ultimate Package */}
-            <Card className="border-primary/20 hover:border-primary transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Ultimate</span>
-                  <Award className="h-5 w-5 text-violet-500" />
-                </CardTitle>
-                <CardDescription>Advanced NSAT mastery</CardDescription>
-                <div className="mt-2">
-                  <p className="text-3xl font-bold">₹1499</p>
-                  <p className="text-sm text-muted-foreground">or ₹449/month</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm"><span className="font-medium">Everything</span> in Premium</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm">1-on-1 mentorship (4 sessions)</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm">Personalized study plan</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm">4 mock interviews with feedback</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm">Direct admission support</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full" onClick={() => setLocation('/checkout/ultimate')}>
-                  Go Ultimate
-                </Button>
-              </CardFooter>
-            </Card>
+            
           </div>
         </div>
       </div>
