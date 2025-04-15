@@ -382,7 +382,7 @@ const SupportUsSection = () => {
                   <div className="space-y-2">
                     <h3 className="font-medium">Why Support Us?</h3>
                     <p className="text-sm text-muted-foreground">
-                      Your support helps us create more life-changing content and grow Restart into a movement. Every contribution counts 💙
+                      Your support helps us create more life-changing content and grow REstart into a movement. Every contribution counts 💙
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
