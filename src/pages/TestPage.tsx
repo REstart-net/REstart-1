@@ -333,11 +333,11 @@ export default function TestPage() {
               </CardFooter>
             </Card>
 
-            {/* Ultimate Package */}
+            {/* Platinum Package */}
             <Card className="border-primary/20 hover:border-primary transition-colors">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>Ultimate</span>
+                  <span>Platinum</span>
                   <Award className="h-5 w-5 text-violet-500" />
                 </CardTitle>
                 <CardDescription>Advanced NSAT mastery</CardDescription>
@@ -370,8 +370,8 @@ export default function TestPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => setLocation('/checkout/ultimate')}>
-                  Go Ultimate
+                <Button className="w-full" onClick={() => setLocation('/checkout/platinum')}>
+                  Go Platinum
                 </Button>
               </CardFooter>
             </Card>
@@ -492,11 +492,11 @@ export default function TestPage() {
               </CardFooter>
             </Card>
 
-            {/* Ultimate Package */}
+            {/* Platinum Package */}
             <Card className="border-primary/20 hover:border-primary transition-colors">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>Ultimate</span>
+                  <span>Platinum</span>
                   <Award className="h-5 w-5 text-violet-500" />
                 </CardTitle>
                 <CardDescription>Advanced NSAT mastery</CardDescription>
@@ -529,8 +529,8 @@ export default function TestPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => setLocation('/checkout/ultimate')}>
-                  Go Ultimate
+                <Button className="w-full" onClick={() => setLocation('/checkout/platinum')}>
+                  Go Platinum
                 </Button>
               </CardFooter>
             </Card>

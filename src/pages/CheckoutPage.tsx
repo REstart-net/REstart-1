@@ -23,11 +23,11 @@ interface Package {
 const PRICES = {
   REFERRAL: {
     PREMIUM: 200,
-    ULTIMATE: 500
+    PLATINUM: 500
   },
   NORMAL: {
     PREMIUM: 500,
-    ULTIMATE: 800
+    PLATINUM: 800
   }
 };
 
@@ -52,12 +52,12 @@ const getPackages = (hasReferral: boolean) => [
     features: []
   },
   {
-    id: "ultimate",
-    name: "Ultimate Package",
-    price: hasReferral ? PRICES.REFERRAL.ULTIMATE : PRICES.NORMAL.ULTIMATE,
+    id: "platinum",
+    name: "Platinum Package",
+    price: hasReferral ? PRICES.REFERRAL.PLATINUM : PRICES.NORMAL.PLATINUM,
     description: "1 NSAT exam attempt, Access to free study materials, All subject chapterwise mock tests, Two live doubt sessions per week, 24-hour doubt solution guarantee, Interview prep session, Google Summer of Code preparation, Tech career guidance & mentorship, Free sessions on new technologies",
     color: "purple",
-    regularPrice: hasReferral ? 3499 : PRICES.NORMAL.ULTIMATE,
+    regularPrice: hasReferral ? 3499 : PRICES.NORMAL.PLATINUM,
     features: []
   }
 ];
@@ -158,8 +158,8 @@ export default function CheckoutPage() {
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             {selectedPackage?.id === "premium"
               ? `Your NSAT exam registration is complete${hasReferral ? ' with the referral discount' : ''}. Your Premium Package is now active${hasReferral ? ' for just ₹200 (savings of ₹1799)' : ''}.`
-              : selectedPackage?.id === "ultimate"
-                ? `Your NSAT exam registration is complete${hasReferral ? ' with the referral discount' : ''}. Your Ultimate Package is now active${hasReferral ? ' for just ₹500 (savings of ₹2999)' : ''}. You now have access to all premium features including GSoC preparation and tech mentorship.`
+              : selectedPackage?.id === "platinum"
+                ? `Your NSAT exam registration is complete${hasReferral ? ' with the referral discount' : ''}. Your Platinum Package is now active${hasReferral ? ' for just ₹500 (savings of ₹2999)' : ''}. You now have access to all premium features including GSoC preparation and tech mentorship.`
                 : `Your payment has been processed successfully. Your ${selectedPackage?.name} is now active.`}
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
@@ -210,7 +210,7 @@ export default function CheckoutPage() {
                       <>
                         <p className="text-2xl font-bold mb-2">₹{pkg.price} {hasReferral && <span className="text-sm font-normal text-muted-foreground">with referral</span>}</p>
                       </>
-                    ) : pkg.id === "ultimate" ? (
+                    ) : pkg.id === "platinum" ? (
                       <>
                         <p className="text-2xl font-bold mb-2">₹{pkg.price} {hasReferral && <span className="text-sm font-normal text-muted-foreground">with referral</span>}</p>
                       </>
