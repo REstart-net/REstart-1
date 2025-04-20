@@ -6,7 +6,8 @@ import {
   Menu, X, Bell, User, Search,
   ArrowLeft, LogOut, Code,
   BookOpen, BrainCircuit, Network,
-  ChevronRight, Target, FileText, Video
+  ChevronRight, Target, FileText, Video,
+  PenTool, Globe, Server
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -33,40 +34,49 @@ interface Resource {
 }
 
 const technicalResources = {
-  dsa: [
+  frontend: [
     {
       id: 1,
-      title: "Data Structures Fundamentals",
-      description: "Learn about arrays, linked lists, stacks, queues, and trees",
+      title: "HTML Fundamentals",
+      description: "Learn the structure and semantic elements of HTML",
+      type: "video",
+      duration: "30 mins",
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 2,
+      title: "CSS Mastery",
+      description: "Flexbox, Grid, and responsive design techniques",
       type: "video",
       duration: "45 mins",
       progress: 0,
       link: "#"
     },
     {
-      id: 2,
-      title: "Algorithms Mastery",
-      description: "Sorting, searching, and graph algorithms explained",
+      id: 3,
+      title: "JavaScript Essentials",
+      description: "Core concepts, DOM manipulation, and ES6+ features",
       type: "pdf",
-      pages: 120,
+      pages: 80,
       progress: 0,
       link: "#"
     },
     {
-      id: 3,
-      title: "Problem Solving Patterns",
-      description: "Common patterns and techniques for solving coding problems",
-      type: "video",
-      duration: "60 mins",
+      id: 4,
+      title: "Frontend Interview Questions",
+      description: "Common frontend interview questions and solutions",
+      type: "practice",
+      problems: 25,
       progress: 0,
       link: "#"
     }
   ],
-  systemDesign: [
+  dsa: [
     {
       id: 1,
-      title: "System Design Basics",
-      description: "Introduction to distributed systems and scalability",
+      title: "Basic DSA Concepts",
+      description: "Arrays, linked lists, stacks, queues, and basic algorithms",
       type: "video",
       duration: "50 mins",
       progress: 0,
@@ -74,48 +84,142 @@ const technicalResources = {
     },
     {
       id: 2,
-      title: "Database Design",
-      description: "SQL, NoSQL, and database optimization techniques",
+      title: "Advanced Data Structures",
+      description: "Trees, graphs, heaps, and hash tables with implementation examples",
       type: "pdf",
-      pages: 150,
+      pages: 110,
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 3,
+      title: "Algorithms Analysis",
+      description: "Time and space complexity, Big O notation explained",
+      type: "video",
+      duration: "40 mins",
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 4,
+      title: "DSA Practice Problems",
+      description: "Solve common DSA interview questions with step-by-step solutions",
+      type: "practice",
+      problems: 30,
+      progress: 0,
+      link: "#"
+    }
+  ],
+  languages: [
+    {
+      id: 1,
+      title: "Python Fundamentals",
+      description: "Syntax, data structures, and Python-specific features",
+      type: "video",
+      duration: "55 mins",
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 2,
+      title: "C++ Programming",
+      description: "Core C++ concepts, STL, and memory management",
+      type: "pdf",
+      pages: 120,
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 3,
+      title: "JavaScript for Interviews",
+      description: "Closures, promises, async/await, and JS interview topics",
+      type: "video",
+      duration: "60 mins",
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 4,
+      title: "Coding Challenges",
+      description: "Language-specific coding challenges to test your skills",
+      type: "practice",
+      problems: 25,
+      progress: 0,
+      link: "#"
+    }
+  ],
+  backend: [
+    {
+      id: 1,
+      title: "Django Framework",
+      description: "MVT architecture, ORM, and building REST APIs with Django",
+      type: "video",
+      duration: "65 mins",
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 2,
+      title: "Flask Microframework",
+      description: "Building lightweight web applications with Flask",
+      type: "pdf",
+      pages: 75,
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 3,
+      title: "Node.js Essentials",
+      description: "Event loop, Express.js, and asynchronous programming",
+      type: "video",
+      duration: "55 mins",
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 4,
+      title: "Backend System Design",
+      description: "Design patterns, API development, and database optimization",
+      type: "practice",
+      problems: 15,
+      progress: 0,
+      link: "#"
+    }
+  ],
+  systemDesign: [
+    {
+      id: 1,
+      title: "System Design Fundamentals",
+      description: "Scalability, reliability, and distributed systems concepts",
+      type: "video",
+      duration: "70 mins",
+      progress: 0,
+      link: "#"
+    },
+    {
+      id: 2,
+      title: "Database Design",
+      description: "SQL vs NoSQL, indexing, and query optimization",
+      type: "pdf",
+      pages: 90,
       progress: 0,
       link: "#"
     },
     {
       id: 3,
       title: "Microservices Architecture",
-      description: "Building scalable and maintainable systems",
+      description: "Building and deploying microservices-based applications",
       type: "video",
-      duration: "55 mins",
-      progress: 0,
-      link: "#"
-    }
-  ],
-  codingPractice: [
-    {
-      id: 1,
-      title: "String Manipulation",
-      description: "Practice problems on string operations and algorithms",
-      type: "practice",
-      problems: 20,
+      duration: "45 mins",
       progress: 0,
       link: "#"
     },
     {
-      id: 2,
-      title: "Array Problems",
-      description: "Common array manipulation and searching problems",
+      id: 4,
+      title: "System Design Case Studies",
+      description: "Design TinyURL, Twitter, Netflix, and other popular systems",
       type: "practice",
-      problems: 25,
-      progress: 0,
-      link: "#"
-    },
-    {
-      id: 3,
-      title: "Tree Traversal",
-      description: "Binary tree problems and traversal techniques",
-      type: "practice",
-      problems: 15,
+      problems: 8,
       progress: 0,
       link: "#"
     }
@@ -125,7 +229,7 @@ const technicalResources = {
 export default function TechnicalInterviewResourcesPage() {
   const { user, signOut } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("dsa");
+  const [activeTab, setActiveTab] = useState("frontend");
 
   useEffect(() => {
     const checkMobile = () => {
@@ -246,7 +350,7 @@ export default function TechnicalInterviewResourcesPage() {
               </Link>
               <div>
                 <h1 className="text-2xl font-bold">Technical Interview Preparation</h1>
-                <p className="text-muted-foreground">Master DSA, System Design, and coding problems</p>
+                <p className="text-muted-foreground">Master HTML, CSS, JavaScript, DSA, Python, C++, Django, Flask, Node.js and more</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -289,6 +393,14 @@ export default function TechnicalInterviewResourcesPage() {
           {/* Tabs */}
           <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
             <Button
+              variant={activeTab === "frontend" ? "default" : "ghost"}
+              onClick={() => setActiveTab("frontend")}
+              className="flex items-center gap-2"
+            >
+              <Globe className="h-4 w-4" />
+              <span>HTML, CSS & JavaScript</span>
+            </Button>
+            <Button
               variant={activeTab === "dsa" ? "default" : "ghost"}
               onClick={() => setActiveTab("dsa")}
               className="flex items-center gap-2"
@@ -297,20 +409,28 @@ export default function TechnicalInterviewResourcesPage() {
               <span>Data Structures & Algorithms</span>
             </Button>
             <Button
+              variant={activeTab === "languages" ? "default" : "ghost"}
+              onClick={() => setActiveTab("languages")}
+              className="flex items-center gap-2"
+            >
+              <PenTool className="h-4 w-4" />
+              <span>Python & C++</span>
+            </Button>
+            <Button
+              variant={activeTab === "backend" ? "default" : "ghost"}
+              onClick={() => setActiveTab("backend")}
+              className="flex items-center gap-2"
+            >
+              <Server className="h-4 w-4" />
+              <span>Django, Flask & Node.js</span>
+            </Button>
+            <Button
               variant={activeTab === "systemDesign" ? "default" : "ghost"}
               onClick={() => setActiveTab("systemDesign")}
               className="flex items-center gap-2"
             >
               <Network className="h-4 w-4" />
               <span>System Design</span>
-            </Button>
-            <Button
-              variant={activeTab === "codingPractice" ? "default" : "ghost"}
-              onClick={() => setActiveTab("codingPractice")}
-              className="flex items-center gap-2"
-            >
-              <Code className="h-4 w-4" />
-              <span>Coding Practice</span>
             </Button>
           </div>
 
@@ -332,7 +452,7 @@ export default function TechnicalInterviewResourcesPage() {
                     <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback</p>
                   </div>
                 </div>
-                <Link href="/interview-resources">
+                <Link href="/interview-payment">
                   <Button className="bg-primary hover:bg-primary/90 text-white w-full md:w-auto">
                     Book Mock Interview
                     <ChevronRight className="ml-2 h-4 w-4" />

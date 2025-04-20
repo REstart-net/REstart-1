@@ -14,6 +14,14 @@ export interface PaymentData {
   status: 'pending' | 'verified' | 'rejected';
 }
 
+export interface DirectCheckoutData {
+  userId: string;
+  packageId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 export async function savePayment(paymentData: Omit<PaymentData, 'screenshotPath'>, screenshot: File): Promise<{ success: boolean; error?: string; paymentId?: string; screenshotUrl?: string }> {
   try {
     // 1. Upload the screenshot to storage
@@ -105,4 +113,50 @@ export async function updatePaymentStatus(paymentId: string, status: 'verified' 
   }
   
   return { success: true };
+}
+
+export async function processDirectCheckout(data: DirectCheckoutData) {
+  try {
+    // 1. Create the order record
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: data.userId,
+        package_id: data.packageId,
+        status: 'completed',
+        payment_method: 'direct',
+        created_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+
+    if (orderError) throw orderError;
+    
+    // 2. Generate certificate URL
+    const certificateUrl = `/certificates/certificate.pdf`;
+    
+    // 3. Insert certificate record
+    const { error: certError } = await supabase
+      .from('certificates')
+      .insert({
+        user_id: data.userId,
+        order_id: orderData.id,
+        certificate_url: certificateUrl,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        issue_date: new Date().toISOString(),
+      });
+    
+    if (certError) throw certError;
+    
+    return { 
+      success: true, 
+      orderId: orderData.id,
+      certificateUrl 
+    };
+  } catch (error) {
+    console.error('Error processing direct checkout:', error);
+    return { success: false, error };
+  }
 } 

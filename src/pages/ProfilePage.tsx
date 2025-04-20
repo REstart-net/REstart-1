@@ -36,12 +36,14 @@ export default function ProfilePage() {
     
     Object.entries(progress || {}).forEach(([, subjectProgress]) => {
       if (subjectProgress) {
-        totalProgress += subjectProgress.totalScore || 0;
+        // Ensure progress value doesn't exceed 100%
+        totalProgress += Math.min(subjectProgress.totalScore || 0, 100);
         subjectCount++;
       }
     });
     
-    return subjectCount > 0 ? Math.round(totalProgress / subjectCount) : 0;
+    // Ensure the final percentage doesn't exceed 100%
+    return subjectCount > 0 ? Math.min(Math.round(totalProgress / subjectCount), 100) : 0;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -307,7 +309,7 @@ export default function ProfilePage() {
                                   <span>{subject}</span>
                                 </div>
                                 <span className="text-sm font-medium">
-                                  {subjectProgress.totalScore || 0}% complete
+                                  {Math.min(subjectProgress.totalScore || 0, 100)}% complete
                                 </span>
                               </div>
                             ))
@@ -333,6 +335,8 @@ export default function ProfilePage() {
                     <div className="space-y-6">
                       {subjects.map(subject => {
                         const subjectProgress = progress?.[subject] || { totalScore: 0, completedTests: 0 };
+                        // Ensure subject progress doesn't exceed 100%
+                        const progressValue = Math.min(subjectProgress.totalScore || 0, 100);
                         return (
                           <div key={subject} className="space-y-2">
                             <div className="flex justify-between">
@@ -342,9 +346,9 @@ export default function ProfilePage() {
                                   {subjectProgress.completedTests || 0} tests
                                 </Badge>
                               </div>
-                              <span className="font-medium">{subjectProgress.totalScore || 0}%</span>
+                              <span className="font-medium">{progressValue}%</span>
                             </div>
-                            <Progress value={subjectProgress.totalScore || 0} className="h-2" />
+                            <Progress value={progressValue} className="h-2" />
                             <Link href={`/subjects/${encodeURIComponent(subject)}`}>
                               <Button variant="link" className="p-0 h-auto text-sm">
                                 Go to {subject} materials

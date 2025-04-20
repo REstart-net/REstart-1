@@ -161,11 +161,11 @@ export async function storeUserReferral(userId: string, referralCode: string, re
   }
 }
 
-export const verifyNsatRegistration = async (email: string, referralCode?: string) => {
+export const verifyNsatRegistration = async (email: string) => {
   try {
-    // First, check API with Newton School
+    // Check API with Newton School using email only
     const response = await fetch(
-      `https://django.newtonschool.co/api/v1/marketing/refer/s/btech-computer-science/check_status?email=${encodeURIComponent(email)}${referralCode ? `&referral=${encodeURIComponent(referralCode)}` : ''}`,
+      `https://django.newtonschool.co/api/v1/marketing/refer/s/btech-computer-science/check_status?email=${encodeURIComponent(email)}`,
       {
         headers: {
           'Content-Type': 'application/json'

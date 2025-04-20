@@ -13,7 +13,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Flag, Check, AlertCircle, Star, CheckCircle, Zap, Award } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { hasAttemptedTest, recordTestAttempt } from "@/lib/api";
-import { ReferralVerification } from "@/components/ReferralVerification";
+import { AutoNsatVerification } from "@/components/AutoNsatVerification";
+import { supabase } from "@/lib/supabase";
 
 export default function TestPage() {
   const [, setLocation] = useLocation();
@@ -33,8 +34,9 @@ export default function TestPage() {
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set());
   const [showResults, setShowResults] = useState(false);
   const [hasAttempted, setHasAttempted] = useState(false);
-  const [showReferralVerification, setShowReferralVerification] = useState(false);
+  const [verifyingNsatRegistration, setVerifyingNsatRegistration] = useState(false);
   const [hasNsatVerification, setHasNsatVerification] = useState(false);
+  const [hasReferral, setHasReferral] = useState(false);
 
   // Validate subject and redirect if invalid
   useEffect(() => {
@@ -173,6 +175,34 @@ export default function TestPage() {
     handleSubmitTest();
   };
 
+  // Add new useEffect to check referral status
+  useEffect(() => {
+    async function checkReferralStatus() {
+      if (!user) {
+        setHasReferral(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('user_referrals')
+          .select('*')
+          .eq('user_id', user.id)
+          .not('verified_at', 'is', null)
+          .limit(1);
+
+        if (error) throw error;
+        
+        setHasReferral(data && data.length > 0);
+      } catch (err) {
+        console.error('Error checking referral status:', err);
+        setHasReferral(false);
+      }
+    }
+
+    checkReferralStatus();
+  }, [user]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -197,10 +227,10 @@ export default function TestPage() {
   }
 
   if (hasAttempted) {
-    if (showReferralVerification && !hasNsatVerification && user) {
+    if (verifyingNsatRegistration && !hasNsatVerification && user) {
       return (
         <div className="min-h-screen flex items-center justify-center py-8 px-4">
-          <ReferralVerification 
+          <AutoNsatVerification 
             userId={user.id}
             userEmail={user.email || ''}
             onVerified={() => {
@@ -208,7 +238,7 @@ export default function TestPage() {
               setHasAttempted(false); // Allow the user to take the test again
               setLoading(true); // Trigger reloading the test
             }}
-            onSkip={() => setShowReferralVerification(false)}
+            onSkip={() => setVerifyingNsatRegistration(false)}
           />
         </div>
       );
@@ -228,7 +258,7 @@ export default function TestPage() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Verify your NSAT registration with a referral code to unlock unlimited test attempts.
+              Your NSAT registration status will be automatically verified to unlock unlimited test attempts.
             </p>
           </CardContent>
           <CardFooter className="flex gap-4">
@@ -239,10 +269,10 @@ export default function TestPage() {
               Return to Subject
             </Button>
             <Button 
-              onClick={() => setShowReferralVerification(true)}
+              onClick={() => setVerifyingNsatRegistration(true)}
               variant="default"
             >
-              Verify NSAT Registration
+              Verify Now
             </Button>
           </CardFooter>
         </Card>
@@ -309,8 +339,8 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Complete NSAT success kit</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹899</p>
-                  <p className="text-sm text-muted-foreground">or ₹299/month</p>
+                  <p className="text-3xl font-bold">₹{hasReferral ? 200 : 500} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
+                  <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 1999 : 800} regular price</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -353,8 +383,8 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Advanced NSAT mastery</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹1499</p>
-                  <p className="text-sm text-muted-foreground">or ₹449/month</p>
+                  <p className="text-3xl font-bold">₹{hasReferral ? 500 : 800} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
+                  <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 3499 : 1499} regular price</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -433,20 +463,12 @@ export default function TestPage() {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold mb-2">Test Completed!</h2>
             <p className="text-muted-foreground">
-              You scored {result.score} out of {result.total} ({Math.round((result.score / result.total) * 100)}%)
+              You scored {result.score} out of {result.total} ({Math.round(result.percentage)}%)
             </p>
           </div>
 
           <div className="space-y-8">
-            {result.incorrectQuestions.map(({ question, selectedAnswer }) => (
-              <QuestionCard
-                key={question.id}
-                question={question}
-                selectedAnswer={selectedAnswer}
-                correctAnswer={question.correctAnswer}
-                showExplanation
-              />
-            ))}
+            {/* Display incorrect questions if needed */}
           </div>
 
           <div className="mt-8 text-center">
@@ -518,8 +540,8 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Complete NSAT success kit</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹899</p>
-                  <p className="text-sm text-muted-foreground">or ₹299/month</p>
+                  <p className="text-3xl font-bold">₹{hasReferral ? 200 : 500} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
+                  <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 1999 : 800} regular price</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -562,8 +584,8 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Advanced NSAT mastery</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹1499</p>
-                  <p className="text-sm text-muted-foreground">or ₹449/month</p>
+                  <p className="text-3xl font-bold">₹{hasReferral ? 500 : 800} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
+                  <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 3499 : 1499} regular price</p>
                 </div>
               </CardHeader>
               <CardContent>
