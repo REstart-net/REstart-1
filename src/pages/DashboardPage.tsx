@@ -830,9 +830,8 @@ export default function DashboardPage() {
                             </div>
                             <div>
                               <h3 className="font-semibold">Premium Package</h3>
-                              <div className="flex flex-col">
-                                <p className="text-lg font-bold">₹{hasReferral ? 200 : 500} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
-                                <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 1999 : 800} regular price</p>
+                              <div className="mt-2">
+                                <p className="text-3xl font-bold">₹{hasReferral ? 200 : 500} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
                               </div>
                             </div>
                           </div>

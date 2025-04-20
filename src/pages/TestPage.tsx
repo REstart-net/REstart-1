@@ -340,7 +340,6 @@ export default function TestPage() {
                 <CardDescription>Complete NSAT success kit</CardDescription>
                 <div className="mt-2">
                   <p className="text-3xl font-bold">₹{hasReferral ? 200 : 500} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
-                  <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 1999 : 800} regular price</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -384,7 +383,6 @@ export default function TestPage() {
                 <CardDescription>Advanced NSAT mastery</CardDescription>
                 <div className="mt-2">
                   <p className="text-3xl font-bold">₹{hasReferral ? 500 : 800} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
-                  <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 3499 : 1499} regular price</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -541,7 +539,6 @@ export default function TestPage() {
                 <CardDescription>Complete NSAT success kit</CardDescription>
                 <div className="mt-2">
                   <p className="text-3xl font-bold">₹{hasReferral ? 200 : 500} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
-                  <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 1999 : 800} regular price</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -585,7 +582,6 @@ export default function TestPage() {
                 <CardDescription>Advanced NSAT mastery</CardDescription>
                 <div className="mt-2">
                   <p className="text-3xl font-bold">₹{hasReferral ? 500 : 800} {hasReferral && <span className="text-xs font-normal text-muted-foreground">with referral</span>}</p>
-                  <p className="text-xs text-muted-foreground line-through">₹{hasReferral ? 3499 : 1499} regular price</p>
                 </div>
               </CardHeader>
               <CardContent>

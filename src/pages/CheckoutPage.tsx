@@ -208,13 +208,11 @@ export default function CheckoutPage() {
                   <CardContent>
                     {pkg.id === "premium" ? (
                       <>
-                        <p className="text-2xl font-bold mb-1">₹{pkg.price} {hasReferral && <span className="text-sm font-normal text-muted-foreground">with referral</span>}</p>
-                        <p className="text-xs text-muted-foreground line-through mb-2">₹{hasReferral ? 1999 : pkg.regularPrice} regular price</p>
+                        <p className="text-2xl font-bold mb-2">₹{pkg.price} {hasReferral && <span className="text-sm font-normal text-muted-foreground">with referral</span>}</p>
                       </>
                     ) : pkg.id === "ultimate" ? (
                       <>
-                        <p className="text-2xl font-bold mb-1">₹{pkg.price} {hasReferral && <span className="text-sm font-normal text-muted-foreground">with referral</span>}</p>
-                        <p className="text-xs text-muted-foreground line-through mb-2">₹{hasReferral ? 3499 : pkg.regularPrice} regular price</p>
+                        <p className="text-2xl font-bold mb-2">₹{pkg.price} {hasReferral && <span className="text-sm font-normal text-muted-foreground">with referral</span>}</p>
                       </>
                     ) : pkg.id === "basic" ? (
                       <>
