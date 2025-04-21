@@ -23,9 +23,9 @@ export async function fetchExamDeadlines(): Promise<ExamDeadline[]> {
     {
       name: "Early Intake Round 2",
       // Calculate exact time remaining in real-time instead of using static values
-      daysRemaining: 0,
-      hoursRemaining: 6 - (now.getHours() % 0),
-      minutesRemaining: 16 - (now.getMinutes() % 0),
+      daysRemaining: 8,
+      hoursRemaining: 22 - (now.getHours() % 24),
+      minutesRemaining: 40 - (now.getMinutes() % 60),
       callToAction: "Apply Now",
       description: "Last chance for early application benefits including priority evaluation and scholarships."
     },
