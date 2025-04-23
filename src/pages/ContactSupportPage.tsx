@@ -114,7 +114,7 @@ export default function ContactSupportPage() {
                     <div>
                       <h3 className="font-medium">Email Us</h3>
                       <p className="text-sm text-muted-foreground">
-                        Send us an email at <a href="mailto:support@restart.edu" className="text-primary hover:underline">support@restart.edu</a>
+                        Send us an email at <a href="mailto:letsrestart.here@gmail.com" className="text-primary hover:underline">letsrestart.here@gmail.com</a>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Response time: Within 24 hours
@@ -161,6 +161,9 @@ export default function ContactSupportPage() {
                       <p className="text-sm text-muted-foreground">
                         NST RU Campus, Sonipat, Haryana
                       </p>
+                      <p className="text-sm text-muted-foreground">
+                        NST ADYPU Campus, Pune, Maharashtra
+                      </p>            
                       <p className="text-xs text-muted-foreground mt-1">
                         By appointment only
                       </p>
