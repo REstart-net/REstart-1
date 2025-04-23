@@ -99,50 +99,6 @@ const PageLoader = () => (
   </div>
 );
 
-// Interactive Mouse follower component
-const MouseFollower = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isVisible, setIsVisible] = useState(false);
-  
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-      if (!isVisible) setIsVisible(true);
-    };
-    
-    const handleMouseLeave = () => {
-      setIsVisible(false);
-    };
-    
-    window.addEventListener("mousemove", handleMouseMove);
-    document.body.addEventListener("mouseleave", handleMouseLeave);
-    
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      document.body.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, [isVisible]);
-  
-  return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ 
-            scale: 1, 
-            opacity: 0.2,
-            x: mousePosition.x - 15,
-            y: mousePosition.y - 15
-          }}
-          exit={{ scale: 0, opacity: 0 }}
-          className="fixed w-8 h-8 rounded-full bg-primary pointer-events-none z-50 mix-blend-difference"
-          style={{ left: 0, top: 0 }}
-        />
-      )}
-    </AnimatePresence>
-  );
-};
-
 // 3D Card component with tilt effect
 const TiltCard = ({ children, className }: { children: React.ReactNode, className: string }) => {
   const cardRef = useRef<HTMLDivElement>(null);
