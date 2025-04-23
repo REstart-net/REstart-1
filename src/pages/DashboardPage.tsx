@@ -274,7 +274,7 @@ export default function DashboardPage() {
                 </Button>
               </div>
               
-              <div className="px-3 mb-6">
+              {/* <div className="px-3 mb-6">
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -283,7 +283,7 @@ export default function DashboardPage() {
                     className="w-full bg-background pl-8 pr-4 py-2 text-sm rounded-full border-primary/20 focus-visible:ring-primary/30"
                   />
                 </div>
-              </div>
+              </div> */}
 
               <div className="px-3 space-y-1 flex-1 overflow-y-auto">
                 {currentSidebarItems.map((item, index) => {
@@ -361,14 +361,14 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <div className="relative">
+                {/* <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="search"
                     placeholder="Search..."
                     className="w-60 bg-background/60 pl-8 pr-4 py-2 rounded-full border-primary/20 focus-visible:ring-primary/30"
                   />
-                </div>
+                </div> */}
                 <Button variant="ghost" size="icon" className="rounded-full bg-background/60 border border-border">
                   <Bell className="h-5 w-5" />
                 </Button>
