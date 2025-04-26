@@ -538,9 +538,9 @@ export default function DashboardPage() {
                 <CardContent className="p-0">
                   <div className="flex flex-col md:flex-row">
                     <div className="p-6 flex-1">
-                      <h2 className="text-xl font-bold text-blue-600 mb-2">Get NSAT Exam FREE with Your Referral!</h2>
+                      <h2 className="text-xl font-bold text-blue-600 mb-2">Get a waiver on your NSAT exam of flat INR 300!</h2>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Share your referral link with friends joining our NSAT preparation program and get the exam completely FREE (worth ₹900)!
+                        Share our referral link with your friends joining the NSAT preparation program and get a waiver on the NSAT exam (worth ₹900)!
                       </p>
                       <div className="flex flex-col sm:flex-row gap-3">
                         <a 
@@ -889,8 +889,33 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Certificates and Mock Tests - Improved layout and design */}
+
+            {/* Mock Test CTA */}
+            <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mb-8">
+              <CardContent className="p-5">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                      <Target className="h-6 w-6 text-violet-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-1">Getting the hang of it, try yourself out?</h3>
+                      <p className="text-sm text-muted-foreground">Take a full mock test to assess your preparation level for the NSAT exam.</p>
+                    </div>
+                  </div>
+                  <Link href="/full-mock-test">
+                    <Button className="bg-violet-600 hover:bg-violet-700 text-white w-full md:w-auto">
+                      Start Mock Test
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
               {/* Interview Resources */}
               <Card className="overflow-hidden rounded-xl shadow-md border-[0.5px] border-border">
                 <CardContent className="p-0">
@@ -912,7 +937,7 @@ export default function DashboardPage() {
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h4 className="font-medium mb-1">Technical Interview Guide</h4>
-                          <p className="text-xs text-muted-foreground">Complete DSA and System Design materials</p>
+                          <p className="text-xs text-muted-foreground">Basic Intro to Coding and Computer Science</p>
                         </div>
                         <div className="bg-white rounded-full h-9 w-9 flex items-center justify-center border border-blue-200 shadow-sm">
                           <p className="text-xs font-bold text-blue-600">{Math.min(userData.interviewPrepProgress.technical, 100)}%</p>
@@ -1017,74 +1042,20 @@ export default function DashboardPage() {
               </Card>
             </div>
 
-            {/* Mock Test CTA - Enhanced with glass morphism effect */}
-            <Card className="relative bg-gradient-to-br from-violet-100/20 via-violet-500/5 to-violet-800/10 border-violet-500/20 mb-8 shadow-lg rounded-xl overflow-hidden">
-              <div className="absolute -left-20 -top-20 w-56 h-56 bg-violet-500/10 rounded-full blur-3xl"></div>
-              <div className="absolute -right-20 -bottom-20 w-56 h-56 bg-violet-500/10 rounded-full blur-3xl"></div>
-              <CardContent className="p-5 relative">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-full bg-violet-500/10 flex items-center justify-center">
-                      <Target className="h-6 w-6 text-violet-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1">Ready for a Challenge?</h3>
-                      <p className="text-sm text-muted-foreground">Take a full mock test to assess your preparation level for the NSAT exam.</p>
-                    </div>
-                  </div>
-                  <Link href="/full-mock-test">
-                    <Button className="bg-violet-600 hover:bg-violet-700 text-white w-full md:w-auto rounded-full shadow-md">
-                      Start Mock Test
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Action Cards */}
+            {userData.needsInterviewPrep ? (
+              <>
+                <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mb-8">
+                  <CardContent className="p-5">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="h-12 w-12 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                          <Users className="h-6 w-6 text-violet-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1">Ready for a Mock Interview?</h3>
+                          <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback.</p>
 
-            {/* Checkout Section - Only show if user is not registered for NSAT */}
-            {!userData.isNsatRegistered && (
-              <Card className="relative bg-gradient-to-br from-blue-100/20 via-blue-500/5 to-blue-800/10 border-blue-500/20 mb-8 shadow-lg rounded-xl overflow-hidden">
-                <div className="absolute -left-20 -top-20 w-56 h-56 bg-blue-500/10 rounded-full blur-3xl"></div>
-                <div className="absolute -right-20 -bottom-20 w-56 h-56 bg-blue-500/10 rounded-full blur-3xl"></div>
-                <CardContent className="p-5 relative">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-start gap-4">
-                      <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                        <CreditCard className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold mb-1">Ready to Register for NSAT?</h3>
-                        <p className="text-sm text-muted-foreground">Secure your spot for the upcoming NSAT exam dates and get access to premium features.</p>
-                      </div>
-                    </div>
-                    <Link href="/checkout">
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-auto rounded-full shadow-md">
-                        Register Now
-                        <ChevronRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Action Cards - Final section with improved cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {userData.needsInterviewPrep ? (
-                <>
-                  <Card className="relative bg-gradient-to-br from-purple-100/20 via-violet-500/5 to-purple-800/10 border-purple-500/20 shadow-lg rounded-xl overflow-hidden">
-                    <div className="absolute -left-20 -top-20 w-56 h-56 bg-purple-500/10 rounded-full blur-3xl"></div>
-                    <CardContent className="p-5 relative">
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div className="flex items-start gap-4">
-                          <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-                            <Target className="h-6 w-6 text-purple-600" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-semibold mb-1">Ready for a Mock Interview?</h3>
-                            <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback.</p>
-                          </div>
                         </div>
                         <Link href="/mock-interviews">
                           <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full md:w-auto rounded-full shadow-md">
@@ -1116,24 +1087,32 @@ export default function DashboardPage() {
                           </Button>
                         </Link>
                       </div>
-                    </CardContent>
-                  </Card>
-                </>
-              ) : (
-                <>
-                  <Card className="relative bg-gradient-to-br from-purple-100/20 via-violet-500/5 to-purple-800/10 border-purple-500/20 shadow-lg rounded-xl overflow-hidden">
-                    <div className="absolute -left-20 -top-20 w-56 h-56 bg-purple-500/10 rounded-full blur-3xl"></div>
-                    <CardContent className="p-5 relative">
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div className="flex items-start gap-4">
-                          <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-                            <Target className="h-6 w-6 text-purple-600" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-semibold mb-1">Ready for a Mock Interview?</h3>
-                            <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback.</p>
-                          </div>
+
+                      <Link href="/certificates">
+                        <Button className="bg-amber-600 hover:bg-amber-700 text-white w-full md:w-auto">
+                          View Certificates
+                          <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              <>
+                <Card className="bg-gradient-to-br from-violet-500/5 to-violet-500/10 border-violet-500/20 mb-8">
+                  <CardContent className="p-5">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="h-12 w-12 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                          <Users className="h-6 w-6 text-violet-500" />
                         </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1">Ready for a Mock Interview?</h3>
+                          <p className="text-sm text-muted-foreground">Practice with our expert interviewers and get detailed feedback.</p>
+                        </div>
+                        
+                        
                         <Link href="/mock-interviews">
                           <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full md:w-auto rounded-full shadow-md">
                             Schedule Interview

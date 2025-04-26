@@ -12,8 +12,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 console.log(`Initializing Supabase client with ${!supabaseUrl ? 'FALLBACK' : 'CONFIGURED'} URL and ${!supabaseAnonKey ? 'FALLBACK' : 'CONFIGURED'} key`);
 
 export const supabase = createClient(
-  supabaseUrl || 'https://your-project.supabase.co',
-  supabaseAnonKey || 'your-anon-key',
+  supabaseUrl || 'https://upxfmbopeggtyxjaxzdm.supabase.co',
+  supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVweGZtYm9wZWdndHl4amF4emRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk3MTE4NjYsImV4cCI6MjA1NTI4Nzg2Nn0.Oxlp4gTadi5fdQluzfqmx0qdEmwpq2g2aviIUrx4R_I',
   {
     auth: {
       autoRefreshToken: true,

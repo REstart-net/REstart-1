@@ -278,15 +278,59 @@ export default function TestPage() {
         </Card>
         
         {/* Upgrade Package Section */}
-        <div className="max-w-4xl w-full">
+        <div className="max-w-6xl w-full center mx-auto px-4">
           <h2 className="text-2xl font-bold text-center mb-6">Unlock Unlimited Test Attempts</h2>
           <p className="text-center text-muted-foreground mb-8">
             Upgrade your package to take unlimited tests and maximize your preparation!
           </p>
           
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Starter Package */}
+            <Card className="border-primary/20 hover:border-primary transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Starter</span>
+                  <Star className="h-5 w-5 text-amber-500" />
+                </CardTitle>
+                <CardDescription>Essential NSAT preparation</CardDescription>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold">₹200</p>
+
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">10 practice tests per subject</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Performance tracking dashboard</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Basic study materials</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Email support</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" onClick={() => setLocation('/checkout/starter')}>
+                  Get Started
+                </Button>
+              </CardFooter>
+            </Card>
+
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             {/* Premium Package */}
-            <Card className="border-primary relative shadow-lg">
+            <Card className="border-primary relative shadow-lg mr-8">
               <div className="absolute -top-3 left-0 right-0 flex justify-center">
                 <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
                   MOST POPULAR
@@ -299,7 +343,9 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Complete NSAT success kit</CardDescription>
                 <div className="mt-2">
+
                   <p className="text-3xl font-bold">₹{hasReferral ? 200 : 500}</p>
+
                 </div>
               </CardHeader>
               <CardContent>
@@ -375,6 +421,7 @@ export default function TestPage() {
                 </Button>
               </CardFooter>
             </Card>
+
           </div>
         </div>
       </div>
