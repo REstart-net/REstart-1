@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { QRCodePayment } from "@/components/payment/QRCodePayment";
+import { supabase } from "@/lib/supabase";
 
 // Package type definition
 interface Package {
@@ -18,7 +19,20 @@ interface Package {
   features: string[];
 }
 
-const packages: Package[] = [
+// Price constants based on referral status
+const PRICES = {
+  REFERRAL: {
+    PREMIUM: 200,
+    PLATINUM: 500
+  },
+  NORMAL: {
+    PREMIUM: 500,
+    PLATINUM: 800
+  }
+};
+
+// Base package definitions
+const getPackages = (hasReferral: boolean) => [
   {
     id: "basic",
     name: "Basic Package",
@@ -31,19 +45,19 @@ const packages: Package[] = [
   {
     id: "premium",
     name: "Premium Package",
-    price: 1999,
-    description: "1 NSAT exam attempt, Access to free study materials, All subject chapterwise mock tests, 2 live doubt sessions per week, Interview prep session, Free with referral code + ₹200",
+    price: hasReferral ? PRICES.REFERRAL.PREMIUM : PRICES.NORMAL.PREMIUM,
+    description: "1 NSAT exam attempt, Access to free study materials, All subject chapterwise mock tests, 2 live doubt sessions per week, Interview prep session",
     color: "blue",
-    regularPrice: 1999,
+    regularPrice: hasReferral ? 1999 : PRICES.NORMAL.PREMIUM,
     features: []
   },
   {
-    id: "ultimate",
-    name: "Ultimate Package",
-    price: 3499,
-    description: "1 NSAT exam attempt, Access to free study materials, All subject chapterwise mock tests, Two live doubt sessions per week, 24-hour doubt solution guarantee, Interview prep session, Google Summer of Code preparation, Tech career guidance & mentorship, Free sessions on new technologies, Free with referral code + ₹500",
+    id: "platinum",
+    name: "Platinum Package",
+    price: hasReferral ? PRICES.REFERRAL.PLATINUM : PRICES.NORMAL.PLATINUM,
+    description: "1 NSAT exam attempt, Access to free study materials, All subject chapterwise mock tests, Two live doubt sessions per week, 24-hour doubt solution guarantee, Interview prep session, Google Summer of Code preparation, Tech career guidance & mentorship, Free sessions on new technologies",
     color: "purple",
-    regularPrice: 3499,
+    regularPrice: hasReferral ? 3499 : PRICES.NORMAL.PLATINUM,
     features: []
   }
 ];
@@ -56,6 +70,40 @@ export default function CheckoutPage() {
   const [paymentScreenshot, setPaymentScreenshot] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [paymentComplete, setPaymentComplete] = useState(false);
+  const [hasReferral, setHasReferral] = useState(false);
+  const [packages, setPackages] = useState<Package[]>([]);
+
+  useEffect(() => {
+    async function checkReferralStatus() {
+      if (!user) {
+        setHasReferral(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('user_referrals')
+          .select('*')
+          .eq('user_id', user.id)
+          .not('verified_at', 'is', null)
+          .limit(1);
+
+        if (error) throw error;
+        
+        setHasReferral(data && data.length > 0);
+      } catch (err) {
+        console.error('Error checking referral status:', err);
+        setHasReferral(false);
+      }
+    }
+
+    checkReferralStatus();
+  }, [user]);
+
+  useEffect(() => {
+    // Update packages whenever hasReferral changes
+    setPackages(getPackages(hasReferral));
+  }, [hasReferral]);
 
   if (loading) {
     return (
@@ -108,10 +156,10 @@ export default function CheckoutPage() {
           </div>
           <h2 className="text-2xl font-bold mb-2">Payment Successful!</h2>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            {selectedPackage?.name === "Premium Package"
-              ? "Your NSAT exam registration is complete with the referral discount. Your Premium Package is now active for just ₹200 (savings of ₹1799)!"
-              : selectedPackage?.name === "Ultimate Package"
-                ? "Your NSAT exam registration is complete with the referral discount. Your Ultimate Package is now active for just ₹500 (savings of ₹2999)! You now have access to all premium features including GSoC preparation and tech mentorship."
+            {selectedPackage?.id === "premium"
+              ? `Your NSAT exam registration is complete${hasReferral ? ' with the referral discount' : ''}. Your Premium Package is now active${hasReferral ? ' for just ₹200 (savings of ₹1799)' : ''}.`
+              : selectedPackage?.id === "platinum"
+                ? `Your NSAT exam registration is complete${hasReferral ? ' with the referral discount' : ''}. Your Platinum Package is now active${hasReferral ? ' for just ₹500 (savings of ₹2999)' : ''}. You now have access to all premium features including GSoC preparation and tech mentorship.`
                 : `Your payment has been processed successfully. Your ${selectedPackage?.name} is now active.`}
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
@@ -160,13 +208,11 @@ export default function CheckoutPage() {
                   <CardContent>
                     {pkg.id === "premium" ? (
                       <>
-                        <p className="text-2xl font-bold mb-1">₹200 <span className="text-sm font-normal text-muted-foreground">with referral</span></p>
-                        <p className="text-xs text-muted-foreground line-through mb-2">₹1999 regular price</p>
+                        <p className="text-2xl font-bold mb-2">₹{pkg.price} {hasReferral && <span className="text-sm font-normal text-muted-foreground">with referral</span>}</p>
                       </>
-                    ) : pkg.id === "ultimate" ? (
+                    ) : pkg.id === "platinum" ? (
                       <>
-                        <p className="text-2xl font-bold mb-1">₹500 <span className="text-sm font-normal text-muted-foreground">with referral</span></p>
-                        <p className="text-xs text-muted-foreground line-through mb-2">₹3499 regular price</p>
+                        <p className="text-2xl font-bold mb-2">₹{pkg.price} {hasReferral && <span className="text-sm font-normal text-muted-foreground">with referral</span>}</p>
                       </>
                     ) : pkg.id === "basic" ? (
                       <>
@@ -189,7 +235,7 @@ export default function CheckoutPage() {
             <h2 className="text-2xl font-bold mb-6">2. Make Payment</h2>
             {selectedPackage && (
               <QRCodePayment
-                amount={selectedPackage.id === "premium" ? 200 : selectedPackage.id === "ultimate" ? 500 : selectedPackage.price}
+                amount={selectedPackage.price}
                 packageId={selectedPackage.id}
                 packageName={selectedPackage.name}
                 onPaymentComplete={handlePaymentComplete}
@@ -228,7 +274,7 @@ export default function CheckoutPage() {
                     <h3 className="font-semibold mb-2">Order Details</h3>
                     <p className="text-sm text-muted-foreground">
                       Package: {selectedPackage?.name}<br />
-                      Amount Paid: ₹{selectedPackage?.id === "premium" ? 200 : selectedPackage?.id === "ultimate" ? 500 : selectedPackage?.price}
+                      Amount Paid: ₹{selectedPackage?.price}
                     </p>
                   </div>
                 </div>

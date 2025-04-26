@@ -10,10 +10,11 @@ import { generateTest, calculateScore, generateFullTest } from "@/lib/test-gener
 import { useProgress } from "@/hooks/use-progress";
 import { Subject, subjects } from "@/shared/schema";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Flag, Check, AlertCircle, Star, CheckCircle, Zap, Award } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, Check, AlertCircle, CheckCircle, Zap, Award } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { hasAttemptedTest, recordTestAttempt } from "@/lib/api";
-import { ReferralVerification } from "@/components/ReferralVerification";
+import { AutoNsatVerification } from "@/components/AutoNsatVerification";
+import { supabase } from "@/lib/supabase";
 
 export default function TestPage() {
   const [, setLocation] = useLocation();
@@ -33,8 +34,9 @@ export default function TestPage() {
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set());
   const [showResults, setShowResults] = useState(false);
   const [hasAttempted, setHasAttempted] = useState(false);
-  const [showReferralVerification, setShowReferralVerification] = useState(false);
+  const [verifyingNsatRegistration, setVerifyingNsatRegistration] = useState(false);
   const [hasNsatVerification, setHasNsatVerification] = useState(false);
+  const [hasReferral, setHasReferral] = useState(false);
 
   // Validate subject and redirect if invalid
   useEffect(() => {
@@ -173,6 +175,34 @@ export default function TestPage() {
     handleSubmitTest();
   };
 
+  // Add new useEffect to check referral status
+  useEffect(() => {
+    async function checkReferralStatus() {
+      if (!user) {
+        setHasReferral(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('user_referrals')
+          .select('*')
+          .eq('user_id', user.id)
+          .not('verified_at', 'is', null)
+          .limit(1);
+
+        if (error) throw error;
+        
+        setHasReferral(data && data.length > 0);
+      } catch (err) {
+        console.error('Error checking referral status:', err);
+        setHasReferral(false);
+      }
+    }
+
+    checkReferralStatus();
+  }, [user]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -197,10 +227,10 @@ export default function TestPage() {
   }
 
   if (hasAttempted) {
-    if (showReferralVerification && !hasNsatVerification && user) {
+    if (verifyingNsatRegistration && !hasNsatVerification && user) {
       return (
         <div className="min-h-screen flex items-center justify-center py-8 px-4">
-          <ReferralVerification 
+          <AutoNsatVerification 
             userId={user.id}
             userEmail={user.email || ''}
             onVerified={() => {
@@ -208,7 +238,7 @@ export default function TestPage() {
               setHasAttempted(false); // Allow the user to take the test again
               setLoading(true); // Trigger reloading the test
             }}
-            onSkip={() => setShowReferralVerification(false)}
+            onSkip={() => setVerifyingNsatRegistration(false)}
           />
         </div>
       );
@@ -228,7 +258,7 @@ export default function TestPage() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Verify your NSAT registration with a referral code to unlock unlimited test attempts.
+              Your NSAT registration status will be automatically verified to unlock unlimited test attempts.
             </p>
           </CardContent>
           <CardFooter className="flex gap-4">
@@ -239,10 +269,10 @@ export default function TestPage() {
               Return to Subject
             </Button>
             <Button 
-              onClick={() => setShowReferralVerification(true)}
+              onClick={() => setVerifyingNsatRegistration(true)}
               variant="default"
             >
-              Verify NSAT Registration
+              Verify Now
             </Button>
           </CardFooter>
         </Card>
@@ -254,6 +284,7 @@ export default function TestPage() {
             Upgrade your package to take unlimited tests and maximize your preparation!
           </p>
           
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Starter Package */}
             <Card className="border-primary/20 hover:border-primary transition-colors">
@@ -295,6 +326,9 @@ export default function TestPage() {
               </CardFooter>
             </Card>
 
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             {/* Premium Package */}
             <Card className="border-primary relative shadow-lg mr-8">
               <div className="absolute -top-3 left-0 right-0 flex justify-center">
@@ -309,7 +343,8 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Complete NSAT success kit</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹500</p>
+
+                  <p className="text-3xl font-bold">₹{hasReferral ? 200 : 500}</p>
 
                 </div>
               </CardHeader>
@@ -344,8 +379,49 @@ export default function TestPage() {
               </CardFooter>
             </Card>
 
-            {/* Ultimate Package */}
-            
+            {/* Platinum Package */}
+            <Card className="border-primary/20 hover:border-primary transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Platinum</span>
+                  <Award className="h-5 w-5 text-violet-500" />
+                </CardTitle>
+                <CardDescription>Advanced NSAT mastery</CardDescription>
+                <div className="mt-2">
+                  <p className="text-3xl font-bold">₹{hasReferral ? 500 : 800}</p>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm"><span className="font-medium">Everything</span> in Premium</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">1-on-1 mentorship (4 sessions)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Personalized study plan</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">4 mock interviews with feedback</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <span className="text-sm">Direct admission support</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" onClick={() => setLocation('/checkout/platinum')}>
+                  Go Platinum
+                </Button>
+              </CardFooter>
+            </Card>
+
           </div>
         </div>
       </div>
@@ -392,20 +468,12 @@ export default function TestPage() {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold mb-2">Test Completed!</h2>
             <p className="text-muted-foreground">
-              You scored {result.score} out of {result.total} ({Math.round((result.score / result.total) * 100)}%)
+              You scored {result.score} out of {result.total} ({Math.round(result.percentage)}%)
             </p>
           </div>
 
           <div className="space-y-8">
-            {result.incorrectQuestions.map(({ question, selectedAnswer }) => (
-              <QuestionCard
-                key={question.id}
-                question={question}
-                selectedAnswer={selectedAnswer}
-                correctAnswer={question.correctAnswer}
-                showExplanation
-              />
-            ))}
+            {/* Display incorrect questions if needed */}
           </div>
 
           <div className="mt-8 text-center">
@@ -422,47 +490,7 @@ export default function TestPage() {
             You have used your free test attempt. Upgrade your package to unlock unlimited tests and boost your preparation!
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Starter Package */}
-            <Card className="border-primary/20 hover:border-primary transition-colors">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Starter</span>
-                  <Star className="h-5 w-5 text-amber-500" />
-                </CardTitle>
-                <CardDescription>Essential NSAT preparation</CardDescription>
-                <div className="mt-2">
-                  <p className="text-3xl font-bold">₹399</p>
-                  <p className="text-sm text-muted-foreground">or ₹149/month</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm">10 practice tests per subject</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm">Performance tracking dashboard</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm">Basic study materials</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                    <span className="text-sm">Email support</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full" onClick={() => setLocation('/checkout/starter')}>
-                  Get Started
-                </Button>
-              </CardFooter>
-            </Card>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Premium Package */}
             <Card className="border-primary relative shadow-lg">
               <div className="absolute -top-3 left-0 right-0 flex justify-center">
@@ -477,8 +505,7 @@ export default function TestPage() {
                 </CardTitle>
                 <CardDescription>Complete NSAT success kit</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹899</p>
-                  <p className="text-sm text-muted-foreground">or ₹299/month</p>
+                  <p className="text-3xl font-bold">₹{hasReferral ? 200 : 500}</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -512,17 +539,16 @@ export default function TestPage() {
               </CardFooter>
             </Card>
 
-            {/* Ultimate Package */}
+            {/* Platinum Package */}
             <Card className="border-primary/20 hover:border-primary transition-colors">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>Ultimate</span>
+                  <span>Platinum</span>
                   <Award className="h-5 w-5 text-violet-500" />
                 </CardTitle>
                 <CardDescription>Advanced NSAT mastery</CardDescription>
                 <div className="mt-2">
-                  <p className="text-3xl font-bold">₹1499</p>
-                  <p className="text-sm text-muted-foreground">or ₹449/month</p>
+                  <p className="text-3xl font-bold">₹{hasReferral ? 500 : 800}</p>
                 </div>
               </CardHeader>
               <CardContent>
@@ -550,8 +576,8 @@ export default function TestPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => setLocation('/checkout/ultimate')}>
-                  Go Ultimate
+                <Button className="w-full" onClick={() => setLocation('/checkout/platinum')}>
+                  Go Platinum
                 </Button>
               </CardFooter>
             </Card>

@@ -103,9 +103,7 @@ const PageLoader = () => (
 const MouseFollower = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
-  
 
-  
   return (
     <AnimatePresence>
       {isVisible && (
@@ -753,7 +751,7 @@ export default function HomePage() {
                         ))}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        <span className="font-medium">4.9/5</span> from over 2,000 students
+                        <span className="font-medium">4.7/5</span> from over 300+ students
                       </p>
                     </div>
                   </div>
@@ -1338,7 +1336,7 @@ export default function HomePage() {
             </section>
           </ParallaxSection>
 
-          {/* Founders Section */}
+
           <ParallaxSection depth={0.2}>
             <section className="py-20 bg-muted/30 relative overflow-hidden">
               <div className="container mx-auto px-4">
@@ -1422,9 +1420,36 @@ export default function HomePage() {
               </motion.div>
                   ))}
                 </div>
+                
               </div>
-            </section>
-          </ParallaxSection>
+            </div>
+            
+            <div className="p-4">
+              <p className="text-muted-foreground mb-4">{founder.bio}</p>
+              
+              <div className="space-y-2">
+                {founder.achievements.map((achievement, aIndex) => (
+                  <div key={aIndex} className="flex items-center gap-2 text-sm">
+                    <div className="flex-shrink-0">
+                      {aIndex === 0 ? (
+                        <School className="h-4 w-4 text-primary" />
+                      ) : aIndex === 1 ? (
+                        <Briefcase className="h-4 w-4 text-primary" />
+                      ) : (
+                        <Users className="h-4 w-4 text-primary" />
+                      )}
+                    </div>
+                    <span>{achievement}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </section>
+</ParallaxSection>
           
           {/* FAQ Section */}
           <section className="py-20 relative overflow-hidden">

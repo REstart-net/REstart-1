@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -7,53 +7,74 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { IndianRupee } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/lib/supabase";
+import { useLocation } from "wouter";
 
-const timeSlots = [
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "2:00 PM",
-  "3:00 PM",
-  "4:00 PM",
-  "5:00 PM",
-];
-
-// Simple date formatter
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
+// Price plans based on referral status
+const PRICES = {
+  REFERRAL: {
+    STANDARD: 100
+  },
+  NORMAL: {
+    STANDARD: 100
+  }
 };
 
 export function InterviewBookingModal() {
-  const [date, setDate] = useState<Date>(new Date());
-  const [time, setTime] = useState<string>("");
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const [hasReferral, setHasReferral] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  // Simple date picker controls
-  const addDays = (days: number) => {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + days);
-    setDate(newDate);
+  useEffect(() => {
+    async function checkReferralStatus() {
+      if (!user) {
+        setHasReferral(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('user_referrals')
+          .select('*')
+          .eq('user_id', user.id)
+          .not('verified_at', 'is', null)
+          .limit(1);
+
+        if (error) throw error;
+        
+        setHasReferral(data && data.length > 0);
+      } catch (err) {
+        console.error('Error checking referral status:', err);
+        setHasReferral(false);
+      }
+    }
+
+    checkReferralStatus();
+  }, [user]);
+
+  const getPrice = () => {
+    return hasReferral ? PRICES.REFERRAL.STANDARD : PRICES.NORMAL.STANDARD;
   };
 
   const handleBooking = () => {
-    // Here you would typically make an API call to book the session
-    console.log("Booking session for:", date, time);
-    // Show success message or redirect to payment
+    // Store booking details in localStorage for the checkout page
+    localStorage.setItem('interviewBooking', JSON.stringify({
+      package: "STANDARD",
+      price: getPrice()
+    }));
+    
+    // Close the modal
+    setOpen(false);
+    
+    // Redirect to payment page
+    setLocation(`/interview-payment`);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="w-full">Book Interview Session</Button>
       </DialogTrigger>
@@ -62,44 +83,29 @@ export function InterviewBookingModal() {
           <DialogTitle>Book Your Mock Interview</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <h4 className="font-medium">Select Date</h4>
-            <div className="rounded-md border p-4">
-              <div className="flex items-center justify-between mb-4">
-                <Button variant="outline" size="sm" onClick={() => addDays(-1)}>Previous Day</Button>
-                <div className="font-medium">{formatDate(date)}</div>
-                <Button variant="outline" size="sm" onClick={() => addDays(1)}>Next Day</Button>
-              </div>
-              <div className="text-center text-sm text-muted-foreground">
-                {date.toLocaleDateString('en-IN', { weekday: 'long' })}
-              </div>
+          <div className="p-4 border rounded-md">
+            <h5 className="font-semibold">Standard Interview</h5>
+            <ul className="mt-2 space-y-1 text-sm">
+              <li>• 30-minute mock interview</li>
+              <li>• Basic feedback</li>
+              <li>• One practice question</li>
+            </ul>
+            <div className="flex items-center gap-1 mt-3">
+              <IndianRupee className="h-4 w-4" />
+              <span className="font-bold">{getPrice()}</span>
+              {hasReferral && <span className="text-xs text-muted-foreground ml-1">(with referral)</span>}
             </div>
           </div>
-          <div className="space-y-2">
-            <h4 className="font-medium">Select Time Slot</h4>
-            <Select value={time} onValueChange={setTime}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a time slot" />
-              </SelectTrigger>
-              <SelectContent>
-                {timeSlots.map((slot) => (
-                  <SelectItem key={slot} value={slot}>
-                    {slot}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          
           <div className="flex items-center justify-between border-t pt-4">
             <div className="flex items-center gap-1">
               <IndianRupee className="h-5 w-5" />
-              <span className="text-xl font-bold">100</span>
+              <span className="text-xl font-bold">{getPrice()}</span>
             </div>
             <Button 
               onClick={handleBooking}
-              disabled={!time}
             >
-              Confirm Booking
+              Book Now
             </Button>
           </div>
         </div>

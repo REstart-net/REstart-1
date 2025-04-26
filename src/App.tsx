@@ -17,6 +17,8 @@ import ExamDatesPage from "./pages/ExamDatesPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ContactSupportPage from "./pages/ContactSupportPage";
 import SupportDashboardPage from "./pages/SupportDashboardPage";
+import InterviewPaymentPage from "./pages/InterviewPaymentPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
@@ -43,6 +45,8 @@ export default function App() {
         <Route path="/reset-password" component={ResetPasswordPage} />
         <Route path="/support" component={ContactSupportPage} />
         <Route path="/support/dashboard" component={SupportDashboardPage} />
+        <Route path="/interview-payment" component={InterviewPaymentPage} />
+        <Route component={NotFoundPage} />
       </Switch>
     </>
   );
