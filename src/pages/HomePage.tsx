@@ -1601,7 +1601,7 @@ export default function HomePage() {
               <img 
                 src={founder.image} 
                 alt={founder.name} 
-                className={`w-full h-full object-cover ${founder.name === "Chiranjeev Agrawal" || founder.name === "Sahil Khan" ? "translate-y-2" : ""}`} // HIGHLIGHT: Changed line
+                className={`w-full h-full object-cover $`} // HIGHLIGHT: Changed line
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-4 left-4 text-white">
